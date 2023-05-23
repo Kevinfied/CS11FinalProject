@@ -28,6 +28,30 @@ def drawRect(x,y,r,color,spinRad):
     # draw.circle(screen, RED, points[1], 5)
     draw.line(screen, RED, points[0], points[1],6)
 
+class Tank1(object):
+    def __init__(self):
+        self.x = 400
+        self.y = 300
+        self.r = 50
+        self.color = GREEN
+        self.spin = 0
+        self.mag = 5
+        self.angVel = 2*pi/90
+    def draw(self):
+        drawRect(self.x,self.y,self.r,self.color,self.spin)
+    def move(self,forward,back,left,right):
+        if left:
+            self.spin+= self.angVel
+        elif right:
+            self.spin-= self.angVel
+        if forward:
+            self.x = (self.x + self.mag*cos(self.spin + pi/2) +800) % 800
+            self.y = (self.y - self.mag*sin(self.spin + pi/2) +600) % 600
+        elif back:
+            self.x = (self.x - self.mag*cos(self.spin + pi/2) +800) % 800
+            self.y = (self.y + self.mag*sin(self.spin + pi/2) +600) % 600
+        self.spin = self.spin % (2*pi)
+        print(f"{self.spin/pi:.2f}")
 
 
 ang = 0
@@ -53,6 +77,16 @@ class Player(object):
     
     def draw(self, game_screen):
         pygame.draw.rect(game_screen, self.color, self.player)
+
+    def facing(self, direction):
+        if direction == "up":
+            return pygame.Rect(self.player.x, self.player.y - 1, self.player.width, self.player.height)
+        elif direction == "down":
+            return pygame.Rect(self.player.x, self.player.y + 1, self.player.width, self.player.height)
+        elif direction == "left":
+            return pygame.Rect(self.player.x - 1, self.player.y, self.player.width, self.player.height)
+        elif direction == "right":
+            return pygame.Rect(self.player.x + 1, self.player.y, self.player.width, self.player.height)
 
 pygame.init()
 
@@ -82,11 +116,22 @@ while True:
 
     x_speed = round(pygame.joystick.Joystick(0).get_axis(0)*10)
     y_speed = round(pygame.joystick.Joystick(0).get_axis(1)*10)
-    player.move(x_speed, y_speed)
-
-
+    spin = round(pygame.joystick.Joystick(0).get_axis(2)*10)
+    if spin > 0:
+        direction = "right"
+    elif spin < 0:
+        direction = "left"
+    else:
+        direction = ""
     screen.fill((0,0,0))
+    player.move(x_speed, y_speed)
+    player.facing(direction)
     player.draw(screen)
+    # Tank1.move(x_speed, y_speed)
+    # Tank1.draw(screen)
+
+
+
     pygame.display.update()
     clock.tick(100)
 

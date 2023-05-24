@@ -126,9 +126,9 @@ while True:
     screen.fill((0,0,0))
     player.move(x_speed, y_speed)
     player.facing(direction)
-    player.draw(screen)
-    # Tank1.move(x_speed, y_speed)
-    # Tank1.draw(screen)
+    # player.draw(screen)
+    Tank1.move(x_speed, y_speed)
+    Tank1.draw(screen)
 
 
 

@@ -1,5 +1,7 @@
 from pygame import *
 from math import *
+joystick.init()
+joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
 screen = display.set_mode((800,600))
 running = True # need to break outer loop from inner loop
 tank = image.load('assets/redTank.png')
@@ -31,15 +33,16 @@ while running:
     for evt in event.get():
         if evt.type == QUIT:
             running = False
-    keyArray = key.get_pressed() 
+    keyArray = key.get_pressed()
+    joyHat = joysticks[0].get_hat(0)
     
-    if keyArray[K_UP] or keyArray[K_w]:
+    if keyArray[K_UP] or keyArray[K_w] or joyHat[1] == 1:
         FORWARD = True
-    if keyArray[K_DOWN] or keyArray[K_s]:
+    if keyArray[K_DOWN] or keyArray[K_s] or joyHat[1] == -1:
         BACK = True
-    if keyArray[K_LEFT] or keyArray[K_a]:
+    if keyArray[K_LEFT] or keyArray[K_a] or joyHat[0] == -1:
         LEFT = True
-    if keyArray[K_RIGHT] or keyArray[K_d]:
+    if keyArray[K_RIGHT] or keyArray[K_d] or joyHat[0] == 1:
         RIGHT = True
     
     #------------------------

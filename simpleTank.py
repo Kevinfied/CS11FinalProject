@@ -40,13 +40,13 @@ while running:
             running = False
     keyArray = key.get_pressed() 
     
-    if keyArray[K_UP]:
+    if keyArray[K_UP] or keyArray[K_w]:
         FORWARD = True
-    if keyArray[K_DOWN]:
+    if keyArray[K_DOWN] or keyArray[K_s]:
         BACK = True
-    if keyArray[K_LEFT]:
+    if keyArray[K_LEFT] or keyArray[K_a]:
         LEFT = True
-    if keyArray[K_RIGHT]:
+    if keyArray[K_RIGHT] or keyArray[K_d]:
         RIGHT = True
     
     #------------------------

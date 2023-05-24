@@ -13,8 +13,10 @@ while running:
             running = False
 
     #------------------------
-    print(tank.get_rect().center)
-    print(rectTank.get_rect().center)
+    print('normal tank center',tank.get_rect().center)
+    print('normal tank size', tank.get_size())
+    print('rect Tank center',rectTank.get_rect().center)
+    print('rect tank size', rectTank.get_size())
     break
     #------------------------
     display.flip()

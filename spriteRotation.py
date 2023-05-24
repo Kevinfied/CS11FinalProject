@@ -9,13 +9,14 @@ def blitRotateCenter(surf, image, center, angle):
     rotated_image = transform.rotate(image, angle)
     rad = radians(angle)
     ogImageCenter = image.get_rect(center = center).center
-    offsetToLeft = 10
+    offsetToLeft = 13
     tankCenterX = ogImageCenter[0]-offsetToLeft
     tankCenterY = ogImageCenter[1]
-    rotatedCenter = (tankCenterX + offsetToLeft * cos(rad), tankCenterY + offsetToLeft * sin(rad))
+    rotatedCenter = (tankCenterX + offsetToLeft * cos(rad), tankCenterY - offsetToLeft * sin(rad))
     
     new_rect = rotated_image.get_rect(center = rotatedCenter)
     surf.blit(rotated_image, new_rect)
+    draw.circle(surf, (0,0,0), (tankCenterX, tankCenterY), 5)
 
 ang = 0
 

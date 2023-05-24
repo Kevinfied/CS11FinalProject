@@ -9,21 +9,21 @@ def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
     
     ogImageCenter = (x,y)
-    offsetToLeft = 13
-    tankCenterX = ogImageCenter[0]-offsetToLeft
-    tankCenterY = ogImageCenter[1]
-    rotatedCenter = (tankCenterX + offsetToLeft * cos(rad) + x, tankCenterY - offsetToLeft * sin(rad) + y)
+    offsetToDown = 13
+    tankCenterX = ogImageCenter[0]
+    tankCenterY = ogImageCenter[1]+offsetToDown
+    rotatedCenter = (offsetToDown * cos(rad+pi/2) + x,  -offsetToDown * sin(rad + pi/2) + y+offsetToDown)
 
     new_rect = rotated_image.get_rect(center = rotatedCenter)
 
     surf.blit(rotated_image, new_rect)
-    # draw.circle(surf, (0,0,0), (tankCenterX, tankCenterY), 5)
+    draw.circle(surf, (0,0,0), (tankCenterX, tankCenterY), 5)
 
 spin = 0
 x = screen.get_width()/2
 y = screen.get_height()/2
 mag = 5
-angVel = 2*pi/90
+angVel = 2*pi/40
 
 myClock = time.Clock()
 while running:
@@ -41,7 +41,7 @@ while running:
         LEFT = True
     if keyArray[K_RIGHT] or keyArray[K_d]:
         RIGHT = True
-
+    
     #------------------------
     screen.fill((155,155,155))
     moveTank(screen, tank, spin,x,y)

@@ -10,21 +10,19 @@ tank = image.load('assets/redTank.png')
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
     
-    ogImageCenter = (x,y)
+    
     offsetToDown = 13
-    tankCenterX = ogImageCenter[0]
-    tankCenterY = ogImageCenter[1]+offsetToDown
+    tankCenterX = x
+    tankCenterY = y + offsetToDown
     rotatedCenter = (offsetToDown * cos(rad+pi/2) + x,  -offsetToDown * sin(rad + pi/2) + y+offsetToDown)
-
     new_rect = rotated_image.get_rect(center = rotatedCenter)
-
     surf.blit(rotated_image, new_rect)
     draw.circle(surf, (0,0,0), (tankCenterX, tankCenterY), 5)
 
 spin = 0
 x = screen.get_width()/2
 y = screen.get_height()/2
-mag = 5
+mag = 10
 angVel = 2*pi/40
 
 myClock = time.Clock()

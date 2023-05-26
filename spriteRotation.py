@@ -1,11 +1,15 @@
 from pygame import *
 from math import *
 joystick.init()
-joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
-screen = display.set_mode((800,600))
+# joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
+screen = display.set_mode((1024,768))
+HEIGHT = screen.get_height()
+WIDTH = screen.get_width()
+
 running = True # need to break outer loop from inner loop
 tank = image.load('assets/redTank.png')
 
+class
 
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
@@ -32,15 +36,15 @@ while running:
         if evt.type == QUIT:
             running = False
     keyArray = key.get_pressed()
-    joyHat = joysticks[0].get_hat(0)
+    # joyHat = joysticks[0].get_hat(0)
     
-    if keyArray[K_UP] or keyArray[K_w] or joyHat[1] == 1:
+    if keyArray[K_UP] or keyArray[K_w]:
         FORWARD = True
-    if keyArray[K_DOWN] or keyArray[K_s] or joyHat[1] == -1:
+    if keyArray[K_DOWN] or keyArray[K_s]:
         BACK = True
-    if keyArray[K_LEFT] or keyArray[K_a] or joyHat[0] == -1:
+    if keyArray[K_LEFT] or keyArray[K_a]:
         LEFT = True
-    if keyArray[K_RIGHT] or keyArray[K_d] or joyHat[0] == 1:
+    if keyArray[K_RIGHT] or keyArray[K_d]:
         RIGHT = True
     
     #------------------------
@@ -53,11 +57,11 @@ while running:
         spin-= angVel
     
     if FORWARD:
-        x = (x + mag*cos(spin + pi/2) +800) % 800
-        y = (y - mag*sin(spin + pi/2) +600) % 600
+        x = (x + mag*cos(spin + pi/2) + WIDTH) % WIDTH
+        y = (y - mag*sin(spin + pi/2) + HEIGHT) % HEIGHT
     elif BACK:
-        x = (x - mag*cos(spin + pi/2) +800) % 800
-        y = (y + mag*sin(spin + pi/2) +600) % 600
+        x = (x - mag*cos(spin + pi/2) + WIDTH) % WIDTH
+        y = (y + mag*sin(spin + pi/2) + HEIGHT) % HEIGHT
 
 
     spin = spin % (2*pi)

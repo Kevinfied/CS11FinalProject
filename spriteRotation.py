@@ -50,6 +50,17 @@ class tank:
 tankLeft = tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
 tankRight = tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
 
+class Tank:
+    def __init__(self, x, y, image):
+        self.x = x
+        self.y = y
+        self.image = image
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+    def draw(self, surf):
+        surf.blit(self.image, (self.x, self.y))
+
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
     
@@ -90,12 +101,7 @@ while running:
     screen.fill((155,155,155))
     tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d])
     tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT])
-    
 
-
-    
-    
-    
     #------------------------
     display.flip()
     myClock.tick(30)

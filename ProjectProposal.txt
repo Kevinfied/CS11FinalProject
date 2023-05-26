@@ -1,1 +1,2 @@
-This is where the proposal would be
+1. make 2 tanks that drives and shoots
+2. we need collisions

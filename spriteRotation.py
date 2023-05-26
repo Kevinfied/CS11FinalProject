@@ -61,6 +61,7 @@ class Tank:
     def draw(self, surf):
         surf.blit(self.image, (self.x, self.y))
 
+
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
     

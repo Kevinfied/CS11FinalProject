@@ -9,7 +9,16 @@ WIDTH = screen.get_width()
 running = True # need to break outer loop from inner loop
 tank = image.load('assets/redTank.png')
 
-class
+class Tank:
+    def __init__(self, x, y, image):
+        self.x = x
+        self.y = y
+        self.image = image
+    def move(self, x, y):
+        self.x = x
+        self.y = y
+    def draw(self, surf):
+        surf.blit(self.image, (self.x, self.y))
 
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))

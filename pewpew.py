@@ -18,7 +18,7 @@ TIME = 4
 running = True
 myClock = time.Clock()
 shots = []
-bulletPeriod = 3000
+bulletPeriod = 9000
 
 
 while running:

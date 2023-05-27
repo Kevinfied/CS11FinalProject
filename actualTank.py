@@ -7,12 +7,19 @@ HEIGHT = screen.get_height()
 WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
+bulletVel = 14
+bulletPeriod = 8000
+X = 0
+Y = 1
+VX = 2
+VY = 3
+TIME = 4
 running = True # need to break outer loop from inner loop
 redTank = image.load('assets/redTank.png')
 
 
 def velComponents(heading,d):
-    return d*sin(heading), d* cos(heading)
+    return -d*sin(heading) , -d*cos(heading)
 
 class tank:
     def __init__(self,surf, img, x, y, angle, col):
@@ -29,14 +36,15 @@ class tank:
         self.mag = 10
 
         self.bulletVel = 11
+        self.shots = []
     def update(self,forward, back, left, right,shooting):
         # self.forward = forward
         # self.back = back
         # self.left = left
         # self.right = right
         # self.shooting = shooting
-        # if shooting:
-
+        
+            
 
         if left:
             self.angle += self.angVel
@@ -53,9 +61,32 @@ class tank:
         rotated_image = transform.rotate(self.img, degrees(self.angle))
         rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y+self.offsetDown)
         new_rect = rotated_image.get_rect(center = rotatedCenter)
+
+
         self.surf.blit(rotated_image, new_rect)
         draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 10)
         draw.rect(self.surf, self.col, new_rect, 2)
+
+        if shooting:
+            muzX, muzY = rotatedCenter[:2]
+            vx,vy = velComponents(self.angle, bulletVel)
+            self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
+
+        for shot in self.shots:
+            if shot[X]  <= 0 or shot[X]>=screen.get_width():
+                shot[VX] = -shot[VX]
+            if shot[Y] <= 0 or shot[Y] >= screen.get_height():
+                shot[VY] = -shot[VY]
+
+            shot[X] += shot[VX]
+            shot[Y] += shot[VY]
+        for i in range(len(self.shots)):  
+            shot = self.shots[i]
+            if time.get_ticks() - shot[TIME] >= bulletPeriod:
+                del self.shots[i]
+                break
+            if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
+                draw.circle(screen, self.col, shot[:2], 5)
 
         
 

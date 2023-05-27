@@ -23,11 +23,15 @@ class tank:
 
         self.angVel = 2*pi/40
         self.mag = 10
-    def update(self,forward, back, left, right):
+
+        self.bulletVel = 11
+    def update(self,forward, back, left, right,shooting):
         self.forward = forward
         self.back = back
         self.left = left
         self.right = right
+        self.shooting = shooting
+        
 
         if self.left:
             self.angle += self.angVel
@@ -47,8 +51,11 @@ class tank:
         self.surf.blit(rotated_image, new_rect)
         draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 10)
 
+        
+
 tankLeft = tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
 tankRight = tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
+tankRight.mag = 25
 
 class Tank:
     def __init__(self, x, y, image):
@@ -100,8 +107,8 @@ while running:
     #------------------------
     keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
     screen.fill((155,155,155))
-    tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d])
-    tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT])
+    tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],keyArray[K_TAB])
+    tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], keyArray[K_SPACE])
 
     #------------------------
     display.flip()

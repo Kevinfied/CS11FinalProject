@@ -10,6 +10,10 @@ BLUE = (0,0,255)
 running = True # need to break outer loop from inner loop
 redTank = image.load('assets/redTank.png')
 
+
+def velComponents(heading,d):
+    return d*sin(heading), d* cos(heading)
+
 class tank:
     def __init__(self,surf, img, x, y, angle, col):
         self.surf = surf
@@ -26,22 +30,23 @@ class tank:
 
         self.bulletVel = 11
     def update(self,forward, back, left, right,shooting):
-        self.forward = forward
-        self.back = back
-        self.left = left
-        self.right = right
-        self.shooting = shooting
-        
+        # self.forward = forward
+        # self.back = back
+        # self.left = left
+        # self.right = right
+        # self.shooting = shooting
+        # if shooting:
 
-        if self.left:
+
+        if left:
             self.angle += self.angVel
-        elif self.right:
+        elif right:
             self.angle -= self.angVel
         
-        if self.forward:
+        if forward:
             self.x = (self.x + self.mag*cos(self.angle  + pi/2) + WIDTH) % WIDTH
             self.y = (self.y - self.mag*sin(self.angle  + pi/2) + HEIGHT) % HEIGHT
-        elif self.back:
+        elif back:
             self.x = (self.x - self.mag*cos(self.angle  + pi/2) + WIDTH) % WIDTH
             self.y = (self.y + self.mag*sin(self.angle  + pi/2) + HEIGHT) % HEIGHT
 
@@ -50,12 +55,13 @@ class tank:
         new_rect = rotated_image.get_rect(center = rotatedCenter)
         self.surf.blit(rotated_image, new_rect)
         draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 10)
+        draw.rect(self.surf, self.col, new_rect, 2)
 
         
 
 tankLeft = tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
 tankRight = tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
-tankRight.mag = 25
+tankRight.mag = 18
 
 class Tank:
     def __init__(self, x, y, image):
@@ -71,8 +77,6 @@ class Tank:
 
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))
-    
-    
     offsetToDown = 13
     rotatedCenter = (offsetToDown * cos(rad+pi/2) + x,  -offsetToDown * sin(rad + pi/2) + y+offsetToDown)
     new_rect = rotated_image.get_rect(center = rotatedCenter)

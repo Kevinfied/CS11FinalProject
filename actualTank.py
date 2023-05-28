@@ -8,7 +8,10 @@ WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
 bulletVel = 14
-bulletPeriod = 8000
+bulletLife = 6000
+reloadPeriod = 5000
+loads = 5
+margin = 50
 X = 0
 Y = 1
 VX = 2
@@ -19,7 +22,7 @@ redTank = image.load('assets/redTank.png')
 
 
 def velComponents(heading,d):
-    return -d*sin(heading) , -d*cos(heading)
+    return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
 class tank:
     def __init__(self,surf, img, x, y, angle, col):
@@ -37,6 +40,7 @@ class tank:
 
         self.bulletVel = 11
         self.shots = []
+        self.loads = loads
     def update(self,forward, back, left, right,shooting):
         # self.forward = forward
         # self.back = back
@@ -67,11 +71,15 @@ class tank:
         draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 10)
         draw.rect(self.surf, self.col, new_rect, 2)
 
-        if shooting:
+        if shooting and self.loads != 0:
             muzX, muzY = rotatedCenter[:2]
             vx,vy = velComponents(self.angle, bulletVel)
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
-
+            self.loads -= 1
+        if 0<= time.get_ticks()%5000 <= margin:
+            print('reloaded')
+            self.loads = loads
+        # print(time.get_ticks()%5000)
         for shot in self.shots:
             if shot[X]  <= 0 or shot[X]>=screen.get_width():
                 shot[VX] = -shot[VX]
@@ -82,7 +90,7 @@ class tank:
             shot[Y] += shot[VY]
         for i in range(len(self.shots)):  
             shot = self.shots[i]
-            if time.get_ticks() - shot[TIME] >= bulletPeriod:
+            if time.get_ticks() - shot[TIME] >= bulletLife:
                 del self.shots[i]
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
@@ -124,10 +132,15 @@ def moveTank(surf, image, rad, x, y):
 
 myClock = time.Clock()
 while running:
-    # FORWARD,BACK,LEFT,RIGHT = False,False,False,False
+    rightShoot,leftShoot = False, False
     for evt in event.get():
         if evt.type == QUIT:
             running = False
+        if evt.type == KEYDOWN:
+            if evt.key == K_SPACE:
+                rightShoot = True
+            if evt.key == K_TAB:
+                leftShoot = True
     keyArray = key.get_pressed()
     # joyHat = joysticks[0].get_hat(0)
     
@@ -140,10 +153,10 @@ while running:
     # if keyArray[K_RIGHT] or keyArray[K_d]:
     #     RIGHT = True
     #------------------------
-    keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
+    # keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
     screen.fill((155,155,155))
-    tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],keyArray[K_TAB])
-    tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], keyArray[K_SPACE])
+    tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],leftShoot)
+    tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], rightShoot)
 
     #------------------------
     display.flip()

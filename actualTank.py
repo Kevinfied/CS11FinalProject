@@ -7,7 +7,7 @@ HEIGHT = screen.get_height()
 WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
-bulletVel = 14
+bulletVel = 12
 bulletLife = 6000
 reloadPeriod = 5000
 loads = 5
@@ -68,7 +68,7 @@ class tank:
 
 
         self.surf.blit(rotated_image, new_rect)
-        draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 10)
+        draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 20)
         draw.rect(self.surf, self.col, new_rect, 2)
 
         if shooting and self.loads != 0:

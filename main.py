@@ -1,4 +1,5 @@
-import pygame
-import math
-import random
+
+import tank
+__name__ = "__main__"
+
 

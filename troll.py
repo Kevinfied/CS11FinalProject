@@ -1,8 +1,8 @@
-import actualTank
+import tank
 from math import *
 
 
 
 
 for i in range(13):
-    print(actualTank.velComponents(2*pi*i/12,1))
+    print(tank.velComponents(2*pi*i/12,1))

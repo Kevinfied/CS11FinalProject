@@ -7,8 +7,10 @@ def similar(x1,y1,x2,y2,d):
     sx = d * wid / hy
     sy = d * hei / hy
     return sx,sy
+WIDTH = 2000
+HEIGHT = 1000
 
-screen = display.set_mode((1024, 768))
+screen = display.set_mode((WIDTH, HEIGHT))
 boxx, boxy = 512,384
 X = 0
 Y = 1
@@ -18,7 +20,7 @@ TIME = 4
 running = True
 myClock = time.Clock()
 shots = []
-bulletPeriod = 9000
+bulletPeriod = 10000
 
 
 while running:

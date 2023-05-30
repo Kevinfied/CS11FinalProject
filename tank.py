@@ -17,8 +17,7 @@ Y = 1
 VX = 2
 VY = 3
 TIME = 4
-running = True # need to break outer loop from inner loop
-redTank = image.load('assets/redTank.png')
+redTank = image.load('assets/redTankNorm.png')
 
 
 def velComponents(heading,d):
@@ -131,15 +130,18 @@ def moveTank(surf, image, rad, x, y):
 # angVel = 2*pi/40
 
 myClock = time.Clock()
+running = False
+if __name__ == "__main__":
+    running = True
 while running:
     rightShoot,leftShoot = False, False
     for evt in event.get():
         if evt.type == QUIT:
             running = False
         if evt.type == KEYDOWN:
-            if evt.key == K_SPACE:
+            if evt.key == K_SLASH:
                 rightShoot = True
-            if evt.key == K_TAB:
+            if evt.key == K_c:
                 leftShoot = True
     keyArray = key.get_pressed()
     # joyHat = joysticks[0].get_hat(0)

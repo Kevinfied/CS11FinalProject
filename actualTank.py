@@ -160,6 +160,6 @@ while running:
 
     #------------------------
     display.flip()
-    myClock.tick(30)
+    myClock.tick(60 )
 quit()
     

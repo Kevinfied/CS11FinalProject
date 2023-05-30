@@ -23,7 +23,7 @@ redTank = image.load('assets/redTankNorm.png')
 def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
-class tank:
+class Tank:
     def __init__(self,surf, img, x, y, angle, col):
         self.surf = surf
         self.img = img
@@ -97,20 +97,11 @@ class tank:
 
         
 
-tankLeft = tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
-tankRight = tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
+tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
+tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
 tankRight.mag = 18
 
-class Tank:
-    def __init__(self, x, y, image):
-        self.x = x
-        self.y = y
-        self.image = image
-    def move(self, x, y):
-        self.x = x
-        self.y = y
-    def draw(self, surf):
-        surf.blit(self.image, (self.x, self.y))
+
 
 
 def moveTank(surf, image, rad, x, y):

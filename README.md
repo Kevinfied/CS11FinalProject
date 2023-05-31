@@ -1,5 +1,4 @@
-Raymond is sabotaging the readme. <br />
+ICS3U FSE <br />
 <br />
-<br />
-Kevin was here
+By Raymond and Kevin
 

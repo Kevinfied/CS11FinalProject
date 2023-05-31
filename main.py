@@ -1,15 +1,20 @@
 import pygame
+import assets
 import tank
 import os
-import os
+x = 10
+y = 45
 
-os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (-10, 100)
+os.environ['SDL_VIDEO_WINDOW_POS'] = "%d,%d" % (x, y)
+pygame.init()
 
 mainRunning = True
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 768
-pygame.display.set_caption("FSE")
+
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+pygame.display.set_caption("ICS3U FSE")
+pygame.display.set_icon(assets.blueBase)
 
 
 while mainRunning:

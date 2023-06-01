@@ -1,11 +1,14 @@
 from pygame import *
-
+import assets
 screen = display.set_mode((800,600))
 running = True # need to break outer loop from inner loop
 
-
-tank = image.load('assets/redTank.png')
-rectTank = image.load('assets/tankBase.png')
+scale = 5 
+x, y = assets.redBase.get_width(), assets.redBase.get_height()
+bigTank = transform.scale(assets.redBase, (x*scale, y * scale))
+print(bigTank.get_rect())
+print(bigTank.get_size())
+screen.blit(bigTank, (0,0))
 while running:
     # event.get() returns a list
     for evt in event.get():
@@ -13,11 +16,9 @@ while running:
             running = False
 
     #------------------------
-    print('normal tank center',tank.get_rect().center)
-    print('normal tank size', tank.get_size())
-    print('rect Tank center',rectTank.get_rect().center)
-    print('rect tank size', rectTank.get_size())
-    break
+    posX, posY = mouse.get_pos()
+    print(posX // scale, posY // scale)
+    print(bigTank.get_rect().ce)
     #------------------------
     display.flip()
 

@@ -1,6 +1,6 @@
 from pygame import *
 from math import *
-import assets
+
 
 RED = (255,0,0)
 GREEN = (0,255,0)
@@ -71,12 +71,18 @@ def velComponents(heading,d):
 class Tank:
     def __init__(self,surf, img, x, y, angle, col, scale):
         self.surf = surf
-        self.img = img
+        self.scale = scale
+        width = img.get_width()
+        height = img.get_height()
+        self.img = transform.scale(img, (width*scale, height*scale))
+        
+        
         self.x = x
         self.y = y
         self.angle = angle
-        self.scale = scale
-        self.offsetDown = 13 * scale
+        
+        self.offsetDown = 4.25 * scale
+        self.y = y + self.offsetDown
         self.col = col
 
         self.angVel = 2*pi/40
@@ -102,14 +108,24 @@ class Tank:
             self.y = (self.y + self.mag*sin(self.angle  + pi/2) + HEIGHT) % HEIGHT
 
         rotated_image = transform.rotate(self.img, degrees(self.angle))
-        rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y+self.offsetDown)
+        rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y)
         new_rect = rotated_image.get_rect(center = rotatedCenter)
 
 
         self.surf.blit(rotated_image, new_rect)
-        draw.circle(self.surf, self.col, (self.x, self.y+self.offsetDown), 20)
-        draw.rect(self.surf, self.col, new_rect, 2)
+        basePoints = []
+        h1 = 31.8276 * self.scale
+        h2 = 37.20215048 * self.scale
+        theta1, theta2, theta3, theta4= 0.8076, 2.3339, 4.0796, 5.3451
+        basePoints.append([self.x+ h1*cos(theta1+self.angle),self.y - h2* sin(theta1+self.angle)])
+        draw.circle(self.surf, self.col, basePoints[0],10, 2)
 
+       
+        
+        
+        draw.circle(self.surf, self.col, (self.x, self.y), 1)
+        draw.rect(self.surf, self.col, new_rect, 2)
+        
         if shooting and self.loads != 0:
             muzX, muzY = rotatedCenter[:2]
             vx,vy = velComponents(self.angle, bulletVel)
@@ -134,11 +150,13 @@ class Tank:
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
                 draw.circle(screen, self.col, shot[:2], 5)
+                
+
 
         
 
-tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK)
-tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE)
+tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK, 5)
+tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE, 0.1)
 tankRight.mag = 18
 
 
@@ -153,46 +171,9 @@ def moveTank(surf, image, rad, x, y):
     draw.circle(surf, (0,0,0), (x, y+offsetToDown), 5)
 
 
+def collision(tank, obj):
+    smartRect(obj.x, obj.y, obj.r, obj.spinRad, (tank.x, tank.y))
 
 
-# x = screen.get_width()/2
-# y = screen.get_height()/2
-# self.mag = 10
-# angVel = 2*pi/40
 
-# myClock = time.Clock()
-# running = False
-# if __name__ == "__main__":
-#     running = True
-# while running:
-#     rightShoot,leftShoot = False, False
-#     for evt in event.get():
-#         if evt.type == QUIT:
-#             running = False
-#         if evt.type == KEYDOWN:
-#             if evt.key == K_SLASH:
-#                 rightShoot = True
-#             if evt.key == K_c:
-#                 leftShoot = True
-#     keyArray = key.get_pressed()
-#     # joyHat = joysticks[0].get_hat(0)
-    
-#     # if keyArray[K_UP] or keyArray[K_w]:
-#     #     FORWARD = True
-#     # if keyArray[K_DOWN] or keyArray[K_s]:
-#     #     BACK = True
-#     # if keyArray[K_LEFT] or keyArray[K_a]:
-#     #     LEFT = True
-#     # if keyArray[K_RIGHT] or keyArray[K_d]:
-#     #     RIGHT = True
-#     #------------------------
-#     # keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
-#     screen.fill((155,155,155))
-#     tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],leftShoot)
-#     tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], rightShoot)
-
-#     #------------------------
-#     display.flip()
-#     myClock.tick(60 )
-# quit()
     

@@ -1,5 +1,6 @@
 from pygame import *
 from math import *
+import assets
 joystick.init()
 # joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
 screen = display.set_mode((1024,768))

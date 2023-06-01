@@ -7,19 +7,19 @@ HEIGHT = screen.get_height()
 WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
-bulletVel = 12
-bulletLife = 6000
-reloadPeriod = 5000
-loads = 5
-margin = 50
-X = 0
+bulletVel = 12 
+bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
+reloadPeriod = 5000 #reload time 
+loads = 5 # 5 shots per reload
+margin = 50 # to account for the rough resolution of get_ticks()
+X = 0 
 Y = 1
 VX = 2
 VY = 3
-TIME = 4
+TIME = 4  # these are indices for the sublists in 2d list shots. each sublist is in the format of [X,Y,VX,VY,TIME]
 redTank = image.load('assets/redTankNorm.png')
 
-
+# returns the velocity components (x and y), given a direction and magnitude (heading and  d)
 def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
@@ -41,11 +41,6 @@ class Tank:
         self.shots = []
         self.loads = loads
     def update(self,forward, back, left, right,shooting):
-        # self.forward = forward
-        # self.back = back
-        # self.left = left
-        # self.right = right
-        # self.shooting = shooting
         
             
 
@@ -120,39 +115,39 @@ def moveTank(surf, image, rad, x, y):
 # self.mag = 10
 # angVel = 2*pi/40
 
-myClock = time.Clock()
-running = False
-if __name__ == "__main__":
-    running = True
-while running:
-    rightShoot,leftShoot = False, False
-    for evt in event.get():
-        if evt.type == QUIT:
-            running = False
-        if evt.type == KEYDOWN:
-            if evt.key == K_SLASH:
-                rightShoot = True
-            if evt.key == K_c:
-                leftShoot = True
-    keyArray = key.get_pressed()
-    # joyHat = joysticks[0].get_hat(0)
+# myClock = time.Clock()
+# running = False
+# if __name__ == "__main__":
+#     running = True
+# while running:
+#     rightShoot,leftShoot = False, False
+#     for evt in event.get():
+#         if evt.type == QUIT:
+#             running = False
+#         if evt.type == KEYDOWN:
+#             if evt.key == K_SLASH:
+#                 rightShoot = True
+#             if evt.key == K_c:
+#                 leftShoot = True
+#     keyArray = key.get_pressed()
+#     # joyHat = joysticks[0].get_hat(0)
     
-    # if keyArray[K_UP] or keyArray[K_w]:
-    #     FORWARD = True
-    # if keyArray[K_DOWN] or keyArray[K_s]:
-    #     BACK = True
-    # if keyArray[K_LEFT] or keyArray[K_a]:
-    #     LEFT = True
-    # if keyArray[K_RIGHT] or keyArray[K_d]:
-    #     RIGHT = True
-    #------------------------
-    # keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
-    screen.fill((155,155,155))
-    tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],leftShoot)
-    tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], rightShoot)
+#     # if keyArray[K_UP] or keyArray[K_w]:
+#     #     FORWARD = True
+#     # if keyArray[K_DOWN] or keyArray[K_s]:
+#     #     BACK = True
+#     # if keyArray[K_LEFT] or keyArray[K_a]:
+#     #     LEFT = True
+#     # if keyArray[K_RIGHT] or keyArray[K_d]:
+#     #     RIGHT = True
+#     #------------------------
+#     # keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT]
+#     screen.fill((155,155,155))
+#     tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],leftShoot)
+#     tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], rightShoot)
 
-    #------------------------
-    display.flip()
-    myClock.tick(60 )
-quit()
+#     #------------------------
+#     display.flip()
+#     myClock.tick(60 )
+# quit()
     

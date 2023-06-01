@@ -69,14 +69,14 @@ def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
 class Tank:
-    def __init__(self,surf, img, x, y, angle, col):
+    def __init__(self,surf, img, x, y, angle, col, scale):
         self.surf = surf
         self.img = img
         self.x = x
         self.y = y
         self.angle = angle
-        
-        self.offsetDown = 13
+        self.scale = scale
+        self.offsetDown = 13 * scale
         self.col = col
 
         self.angVel = 2*pi/40

@@ -115,7 +115,7 @@ class Tank:
 
         self.surf.blit(rotated_image, new_rect)
         basePoints = []
-        h1 = 31.8276 * self.scale
+        h1 = (31.8276-2) * self.scale
         h2 = 37.20215048 * self.scale
         theta1, theta2, theta3, theta4= 0.8076, 2.3339, 4.0796, 5.3451
         basePoints.append([self.x+ h1*cos(theta1+self.angle),self.y - h2* sin(theta1+self.angle)])

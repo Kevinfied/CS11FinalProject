@@ -120,7 +120,7 @@ class Tank:
         basePoints.append([self.x+ h1*cos(theta1+self.angle),self.y - h2* sin(theta1+self.angle)])
         draw.circle(self.surf, self.col, basePoints[0],10, 2)
 
-       
+       # Mr. pants was here
         
         
         draw.circle(self.surf, self.col, (self.x, self.y), 1)

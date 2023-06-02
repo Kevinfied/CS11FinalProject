@@ -1,5 +1,6 @@
 from pygame import *
 from math import *
+import assets
 
 
 RED = (255,0,0)
@@ -154,13 +155,15 @@ class Tank:
 
 
         
-
-tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK, 5)
-tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE, 0.1)
+# changed from 5 to 3 and the circle is now in the wrong position. 
+tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK, 3)
+tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE, 3)
 tankRight.mag = 18
 
 
-
+player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)
+player2 = Tank(screen, assets.redBase, 800, screen.get_height()/2, 0, BLUE, 5)
+bot = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLUE, 5)
 
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))

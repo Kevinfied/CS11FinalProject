@@ -8,6 +8,7 @@ x, y = assets.redBase.get_width(), assets.redBase.get_height()
 bigTank = transform.scale(assets.redBase, (x*scale, y * scale))
 print(bigTank.get_rect())
 print(bigTank.get_size())
+screen.fill((155,155,155))
 screen.blit(bigTank, (0,0))
 while running:
     # event.get() returns a list
@@ -17,8 +18,8 @@ while running:
 
     #------------------------
     posX, posY = mouse.get_pos()
-    print(posX // scale, posY // scale)
-    print(bigTank.get_rect().ce)
+    print(posX // scale, posY // scale,  bigTank.get_rect().center)
+    # print()
     #------------------------
     display.flip()
 

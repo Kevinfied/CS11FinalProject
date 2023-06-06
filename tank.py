@@ -89,7 +89,8 @@ class Tank:
         self.angVel = 2*pi/40
         self.mag = 10
 
-        self.bulletVel = 11
+        self.bulletVel = 6
+        self.bulletRad = 5 * scale
         self.shots = []
         self.loads = loads
     def update(self,forward, back, left, right,shooting):
@@ -115,17 +116,30 @@ class Tank:
 
         self.surf.blit(rotated_image, new_rect)
         basePoints = []
-        h1 = (31.8276-2) * self.scale
-        h2 = 37.20215048 * self.scale
-        theta1, theta2, theta3, theta4= 0.8076, 2.3339, 4.0796, 5.3451
-        basePoints.append([self.x+ h1*cos(theta1+self.angle),self.y - h2* sin(theta1+self.angle)])
-        draw.circle(self.surf, self.col, basePoints[0],10, 2)
+        fatPoints = []
+        h1 = (21*2**0.5) * self.scale
+        h2 = (21**2 + 31**2)**0.5 * self.scale
+
+        crookedAngle  = 0.975386
+        theta = [pi/4, 3*pi/4, pi+crookedAngle, 2*pi-crookedAngle]
+
+        for i in range(4):
+            if i//2 == 0:
+                basePoints.append([rotatedCenter[0]+ h1* cos(theta[i] + self.angle), rotatedCenter[1] - h1 * sin(theta[i] + self.angle)])
+                fatPoints.append([])
+            else:
+                basePoints.append([rotatedCenter[0]+ h2* cos(theta[i] + self.angle), rotatedCenter[1] - h2 * sin(theta[i] + self.angle)])
+        
+
+        for point in basePoints:
+            draw.circle(self.surf, self.col, point, 3)
+            
 
        # Mr. pants was here
         
         
-        draw.circle(self.surf, self.col, (self.x, self.y), 1)
-        draw.rect(self.surf, self.col, new_rect, 2)
+        draw.circle(self.surf, self.col, (self.x, self.y), 3)
+        # draw.rect(self.surf, self.col, new_rect, 2)
         
         if shooting and self.loads != 0:
             muzX, muzY = rotatedCenter[:2]
@@ -150,15 +164,15 @@ class Tank:
                 del self.shots[i]
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
-                draw.circle(screen, self.col, shot[:2], 5)
+                draw.circle(screen, self.col, shot[:2], self.bulletRad)
                 
 
 
         
 # changed from 5 to 3 and the circle is now in the wrong position. 
-tankLeft = Tank(screen, redTank, 200, screen.get_height()/2, 0, BLACK, 3)
-tankRight = Tank(screen, redTank, 800, screen.get_height()/2, 0, BLUE, 3)
-tankRight.mag = 18
+tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3)
+tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3)
+
 
 
 player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)

@@ -54,7 +54,7 @@ HEIGHT = screen.get_height()
 WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
-bulletVel = 12 
+
 bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
 reloadPeriod = 5000 #reload time 
 loads = 5 # 5 shots per reload
@@ -87,8 +87,8 @@ class Tank:
         self.y = y + self.offsetDown
         self.col = col
 
-        self.angVel = 2*pi/40
-        self.mag = 10
+        self.angVel = 2*pi/90
+        self.mag = 6
 
         self.bulletVel = 6
         self.bulletRad = 5 * scale
@@ -112,10 +112,10 @@ class Tank:
 
         rotated_image = transform.rotate(self.img, degrees(self.angle))
         rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y)
-        new_rect = rotated_image.get_rect(center = rotatedCenter)
+        bounding_rect = rotated_image.get_rect(center = rotatedCenter)
 
 
-        self.surf.blit(rotated_image, new_rect)
+        self.surf.blit(rotated_image, bounding_rect)
         basePoints = []
         fatPoints = []
         h1 = (21*2**0.5) * self.scale
@@ -147,8 +147,8 @@ class Tank:
         # draw.rect(self.surf, self.col, new_rect, 2)
         
         if shooting and self.loads != 0:
-            muzX, muzY = rotatedCenter[:2]
-            vx,vy = velComponents(self.angle, bulletVel)
+            muzX, muzY = (fatPoints[0][0]+fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (fatPoints[0][1]+fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
+            vx,vy = velComponents(self.angle, self.bulletVel)
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
             self.loads -= 1
         if 0<= time.get_ticks()%5000 <= margin:
@@ -169,11 +169,16 @@ class Tank:
                 del self.shots[i]
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
-                
                 draw.circle(screen, self.col, shot[:2], self.bulletRad)
-                if pointInRect(fatPoints, [shot[:2]]):
-                    print('sdfs')
+        for tank in tanks:
+            if tank != self:
+                for i in range(len(tank.shots)):  
+                    shot = tank.shots[i]
+                    if pointInRect(fatPoints, [shot[:2]]):
+                        return 'ends'
+        
 
+        
                 
 
 
@@ -181,7 +186,7 @@ class Tank:
 # changed from 5 to 3 and the circle is now in the wrong position. 
 tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3)
 tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3)
-
+tanks = [tankLeft, tankRight]
 
 
 player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)

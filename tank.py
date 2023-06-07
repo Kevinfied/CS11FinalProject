@@ -11,6 +11,7 @@ def shoelace(points):
     downsum, upsum = 0,0
     points.append(points[0])
     
+    
     for i in range(len(points)-1):
         downsum += points[i][0] * points[i+1][1]
         upsum   += points[i+1][0] * points[i][1]
@@ -21,9 +22,9 @@ def shoelace(points):
 
 def pointInRect(points, point):
     points.append(points[0])
+    
     trianglesArea = shoelace(points[0:2]+point) + shoelace(points[1:3]+point) + shoelace(points[2:4]+point) +shoelace(points[3:]+point)
-    print(trianglesArea)
-    print(shoelace(points))
+    
     margin = 0.001
     if 1-margin < trianglesArea/shoelace(points) < 1+margin:
         return True
@@ -126,15 +127,19 @@ class Tank:
         for i in range(4):
             if i//2 == 0:
                 basePoints.append([rotatedCenter[0]+ h1* cos(theta[i] + self.angle), rotatedCenter[1] - h1 * sin(theta[i] + self.angle)])
-                fatPoints.append([])
+                fatPoints.append([rotatedCenter[0]+ (h1+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h1+self.bulletRad) * sin(theta[i] + self.angle)])
             else:
                 basePoints.append([rotatedCenter[0]+ h2* cos(theta[i] + self.angle), rotatedCenter[1] - h2 * sin(theta[i] + self.angle)])
+                fatPoints.append([rotatedCenter[0]+ (h2+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h2+self.bulletRad) * sin(theta[i] + self.angle)])
         
 
         for point in basePoints:
             draw.circle(self.surf, self.col, point, 3)
-            
+        for point in fatPoints:
+            draw.circle(self.surf, self.col, point, 3)
+        
 
+        
        # Mr. pants was here
         
         
@@ -164,7 +169,11 @@ class Tank:
                 del self.shots[i]
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
+                
                 draw.circle(screen, self.col, shot[:2], self.bulletRad)
+                if pointInRect(fatPoints, [shot[:2]]):
+                    print('sdfs')
+
                 
 
 

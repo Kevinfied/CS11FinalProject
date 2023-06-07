@@ -3,7 +3,10 @@ import assets
 import tank
 import os
 
+
+
 pygame.init()
+pygame.mixer.music.load(assets.deathExplosion)
 
 mainRunning = True
 SCREEN_WIDTH = 1180

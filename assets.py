@@ -29,3 +29,7 @@ shotgunPU = image.load("assets/shotgunPU.png")
 shieldPU = image.load("assets/shieldPU.png")
 rayPU = image.load("assets/rayCannonPU.png")
 missilePU = image.load("assets/missilePU.png")
+
+
+deathExplosion = ("assets/sounds/funnyDeath.mp3")
+

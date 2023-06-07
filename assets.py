@@ -33,4 +33,7 @@ missilePU = image.load("assets/missilePU.png")
 
 
 deathExplosion = mixer.Sound("assets/sounds/funnyDeath.mp3")
-
+pop = mixer.Sound("assets/sounds/pop.mp3")
+ping = mixer.Sound("assets/sounds/ping.mp3")
+pong = mixer.Sound("assets/sounds/pong.mp3")
+shotVanish = mixer.Sound("assets/sounds/shotVanish.mp3")

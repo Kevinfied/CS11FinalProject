@@ -2,7 +2,7 @@ from pygame import *
 from math import *
 import assets
 
-
+init()
 RED = (255,0,0)
 GREEN = (0,255,0)
 
@@ -71,13 +71,13 @@ def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
 class Tank:
-    def __init__(self,surf, img, x, y, angle, col, scale):
+    def __init__(self,surf, img, x, y, angle, col, scale, name):
         self.surf = surf
         self.scale = scale
         width = img.get_width()
         height = img.get_height()
         self.img = transform.scale(img, (width*scale, height*scale))
-        
+        self.name = name
         
         self.x = x
         self.y = y
@@ -147,6 +147,7 @@ class Tank:
         # draw.rect(self.surf, self.col, new_rect, 2)
         
         if shooting and self.loads != 0:
+            mixer.Sound.play(assets.pop)
             muzX, muzY = (fatPoints[0][0]+fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (fatPoints[0][1]+fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
             vx,vy = velComponents(self.angle, self.bulletVel)
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
@@ -157,9 +158,12 @@ class Tank:
         # print(time.get_ticks()%5000)
         for shot in self.shots:
             if shot[X]  <= 0 or shot[X]>=screen.get_width():
+
                 shot[VX] = -shot[VX]
+                mixer.Sound.play(assets.ping)
             if shot[Y] <= 0 or shot[Y] >= screen.get_height():
                 shot[VY] = -shot[VY]
+                mixer.Sound.play(assets.pong)
 
             shot[X] += shot[VX]
             shot[Y] += shot[VY]
@@ -167,15 +171,18 @@ class Tank:
             shot = self.shots[i]
             if time.get_ticks() - shot[TIME] >= bulletLife:
                 del self.shots[i]
+                mixer.Sound.play(assets.shotVanish)
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
                 draw.circle(screen, self.col, shot[:2], self.bulletRad)
         for tank in tanks:
+            # print(tank)
             if tank != self:
                 for i in range(len(tank.shots)):  
                     shot = tank.shots[i]
                     if pointInRect(fatPoints, [shot[:2]]):
-                        return 'ends'
+                        print(tank.name + '  destroyed  ' + self.name)
+                        return 'end'
         
 
         
@@ -184,14 +191,15 @@ class Tank:
 
         
 # changed from 5 to 3 and the circle is now in the wrong position. 
-tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3)
-tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3)
+tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3, 'player1')
+tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3, 'player2')
 tanks = [tankLeft, tankRight]
 
 
-player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)
-player2 = Tank(screen, assets.redBase, 800, screen.get_height()/2, 0, BLUE, 5)
-bot = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLUE, 5)
+
+# player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)
+# player2 = Tank(screen, assets.redBase, 800, screen.get_height()/2, 0, BLUE, 5)
+# bot = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLUE, 5)
 
 def moveTank(surf, image, rad, x, y):
     rotated_image = transform.rotate(image, degrees(rad))

@@ -1,4 +1,5 @@
 from pygame import *
+init()
 redBase = image.load('assets/redTankNorm.png')
 blueBase = image.load('assets/blueTankNorm.png')
 blackBase = image.load('assets/blackTankNorm.png')
@@ -29,3 +30,7 @@ shotgunPU = image.load("assets/shotgunPU.png")
 shieldPU = image.load("assets/shieldPU.png")
 rayPU = image.load("assets/rayCannonPU.png")
 missilePU = image.load("assets/missilePU.png")
+
+
+deathExplosion = mixer.Sound("assets/sounds/funnyDeath.mp3")
+

@@ -11,6 +11,7 @@ def shoelace(points):
     downsum, upsum = 0,0
     points.append(points[0])
     
+    
     for i in range(len(points)-1):
         downsum += points[i][0] * points[i+1][1]
         upsum   += points[i+1][0] * points[i][1]
@@ -21,9 +22,9 @@ def shoelace(points):
 
 def pointInRect(points, point):
     points.append(points[0])
+    
     trianglesArea = shoelace(points[0:2]+point) + shoelace(points[1:3]+point) + shoelace(points[2:4]+point) +shoelace(points[3:]+point)
-    print(trianglesArea)
-    print(shoelace(points))
+    
     margin = 0.001
     if 1-margin < trianglesArea/shoelace(points) < 1+margin:
         return True
@@ -53,7 +54,7 @@ HEIGHT = screen.get_height()
 WIDTH = screen.get_width()
 BLACK = (0,0,0)
 BLUE = (0,0,255)
-bulletVel = 12 
+
 bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
 reloadPeriod = 5000 #reload time 
 loads = 5 # 5 shots per reload
@@ -86,8 +87,8 @@ class Tank:
         self.y = y + self.offsetDown
         self.col = col
 
-        self.angVel = 2*pi/40
-        self.mag = 10
+        self.angVel = 2*pi/90
+        self.mag = 6
 
         self.bulletVel = 6
         self.bulletRad = 5 * scale
@@ -111,10 +112,10 @@ class Tank:
 
         rotated_image = transform.rotate(self.img, degrees(self.angle))
         rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y)
-        new_rect = rotated_image.get_rect(center = rotatedCenter)
+        bounding_rect = rotated_image.get_rect(center = rotatedCenter)
 
 
-        self.surf.blit(rotated_image, new_rect)
+        self.surf.blit(rotated_image, bounding_rect)
         basePoints = []
         fatPoints = []
         h1 = (21*2**0.5) * self.scale
@@ -126,15 +127,19 @@ class Tank:
         for i in range(4):
             if i//2 == 0:
                 basePoints.append([rotatedCenter[0]+ h1* cos(theta[i] + self.angle), rotatedCenter[1] - h1 * sin(theta[i] + self.angle)])
-                fatPoints.append([])
+                fatPoints.append([rotatedCenter[0]+ (h1+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h1+self.bulletRad) * sin(theta[i] + self.angle)])
             else:
                 basePoints.append([rotatedCenter[0]+ h2* cos(theta[i] + self.angle), rotatedCenter[1] - h2 * sin(theta[i] + self.angle)])
+                fatPoints.append([rotatedCenter[0]+ (h2+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h2+self.bulletRad) * sin(theta[i] + self.angle)])
         
 
         for point in basePoints:
             draw.circle(self.surf, self.col, point, 3)
-            
+        for point in fatPoints:
+            draw.circle(self.surf, self.col, point, 3)
+        
 
+        
        # Mr. pants was here
         
         
@@ -142,8 +147,8 @@ class Tank:
         # draw.rect(self.surf, self.col, new_rect, 2)
         
         if shooting and self.loads != 0:
-            muzX, muzY = rotatedCenter[:2]
-            vx,vy = velComponents(self.angle, bulletVel)
+            muzX, muzY = (fatPoints[0][0]+fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (fatPoints[0][1]+fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
+            vx,vy = velComponents(self.angle, self.bulletVel)
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
             self.loads -= 1
         if 0<= time.get_ticks()%5000 <= margin:
@@ -165,6 +170,15 @@ class Tank:
                 break
             if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
                 draw.circle(screen, self.col, shot[:2], self.bulletRad)
+        for tank in tanks:
+            if tank != self:
+                for i in range(len(tank.shots)):  
+                    shot = tank.shots[i]
+                    if pointInRect(fatPoints, [shot[:2]]):
+                        return 'ends'
+        
+
+        
                 
 
 
@@ -172,7 +186,7 @@ class Tank:
 # changed from 5 to 3 and the circle is now in the wrong position. 
 tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3)
 tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3)
-
+tanks = [tankLeft, tankRight]
 
 
 player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)

@@ -2,7 +2,7 @@ import pygame
 import assets
 import tank
 import os
-
+import level
 pygame.init()
 
 mainRunning = True
@@ -28,6 +28,8 @@ while mainRunning:
     keyArray = pygame.key.get_pressed()
 
     screen.fill((155,155,155))
+    for map in level.map1:
+        pygame.draw.rect(screen, (0,0,0), map)
     tank.tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot)
     tank.tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
 

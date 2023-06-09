@@ -12,12 +12,25 @@ pygame.init()
 mainRunning = True
 SCREEN_WIDTH = 1180
 SCREEN_HEIGHT = 768
-
+RED = (255,0,0)
+GREEN = (0,255,0)
+BLACK = (0,0,0)
+BLUE = (0,0,255)
+GREY = (155,155,155)
 screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption("ICS3U FSE")
 pygame.display.set_icon(assets.blueBase)
 
+wallwidth = 20
+space = pygame.Rect(wallwidth,wallwidth,SCREEN_WIDTH-2*wallwidth, SCREEN_HEIGHT-2*wallwidth)
+xmin = wallwidth
+xmax = SCREEN_WIDTH- wallwidth
+ymin = wallwidth
+ymax = SCREEN_HEIGHT - wallwidth
 
+def canGo():
+
+    return canGo
 while mainRunning:
     rightShoot,leftShoot = False, False
     for evt in pygame.event.get():
@@ -31,12 +44,15 @@ while mainRunning:
 
     keyArray = pygame.key.get_pressed()
 
-    screen.fill((155,155,155))
-    for map in level.map1:
-        pygame.draw.rect(screen, (0,0,0), map)
+    screen.fill(BLACK)
+    pygame.draw.rect(screen, GREY, space)
+    # for map in level.map1:
+    #     pygame.draw.rect(screen, (0,0,0), map)
+
+    # for point in tank.tankLeft.basePoints:
+    #     if point[0] < xmin or point[0]> xmax or :
+
     
-    # tank.tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot)
-    # tank.tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
     if tank.tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) == 'end' or tank.tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot) == 'end':
         pygame.mixer.Sound.play(assets.deathExplosion)
         pygame.time.delay(3000)
@@ -44,7 +60,7 @@ while mainRunning:
 
 
     pygame.display.flip()
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(50)
  
 pygame.quit()
 quit()

@@ -1,7 +1,7 @@
 from pygame import *
 from math import *
 import assets
-import copy
+
 init()
 RED = (255,0,0)
 GREEN = (0,255,0)
@@ -35,25 +35,13 @@ def pointInRect(points, point):
 # print(pointInRect(points, [[4,4]]))
 # print(points[0:2]+point, points[1:3]+point, points[2:], points[3]+points[0]+point)
 
-def smartRect(x,y,r,spinRad, point):
-    points=[]
-    
-    points.append((x+r*cos(2*pi/6 + spinRad), y- r*sin(2*pi/6 + spinRad)))
-    points.append((x+r*cos(2*pi/6 + 2*pi/6 + spinRad), y- r*sin(2*pi/6 + 2*pi/6 + spinRad)))
-    points.append((x+r*cos(2*pi/6 + pi + spinRad), y- r*sin(2*pi/6 + pi + spinRad)))
-    points.append((x+r*cos(2*pi/6 + 2*pi/6 + pi + spinRad ), y- r*sin(2*pi/6 + 2*pi/6 + pi+ spinRad)))
-    if pointInRect(points, point):
-        draw.polygon(screen,RED,points)
-    else:
-        draw.polygon(screen,GREEN,points)
+
 
 
 
 joystick.init()
 # joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
-screen = display.set_mode((1024,768))
-HEIGHT = screen.get_height()
-WIDTH = screen.get_width()
+
 
 
 bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
@@ -72,6 +60,13 @@ def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
 
+
+def touchingWalls(xmin, xmax, ymin, ymax, points):
+    for point in points:
+        if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
+            return True
+
+    return False
 
 
 class Tank:
@@ -92,16 +87,34 @@ class Tank:
         self.col = col
 
         self.angVel = 2*pi/90
-        self.mag = 6
+        self.mag = 8
 
-        self.bulletVel = 6
+        self.bulletVel = 12
         self.bulletRad = 5 * scale
         self.shots = []
         self.loads = loads
+
+        self.tanks = []
     def update(self,forward, back, left, right,shooting):
         
             
-
+        self.movement = [0,0,0]
+        if left:
+            self.angle += self.angVel
+            self.movement[0] = self.angVel
+        elif right:
+            self.angle -= self.angVel
+            self.movement[0] = -self.angVel
+        if forward:
+            self.x = self.x + self.mag*cos(self.angle  + pi/2) 
+            self.y = self.y - self.mag*sin(self.angle  + pi/2) 
+            self.movement[1] = self.mag*cos(self.angle  + pi/2)
+            self.movement[2] = - self.mag*sin(self.angle  + pi/2)
+        elif back:
+            self.x = self.x - self.mag*cos(self.angle  + pi/2) 
+            self.y = self.y + self.mag*sin(self.angle  + pi/2) 
+            self.movement[1] = - self.mag*cos(self.angle  + pi/2)
+            self.movement[2] = self.mag*sin(self.angle  + pi/2)
         
 
         rotated_image = transform.rotate(self.img, degrees(self.angle))
@@ -154,26 +167,9 @@ class Tank:
         draw.circle(self.surf, self.col, rotatedCenter, 3) 
         draw.rect(self.surf, self.col, bounding_rect, 2)
         
+        
 
-        movement = [0,0,0]
-        if left:
-            self.angle += self.angVel
-            movement[0] = self.angVel
-        elif right:
-            self.angle -= self.angVel
-            movement[0] = -self.angVel
-        if forward:
-            self.x = (self.x + self.mag*cos(self.angle  + pi/2) + WIDTH) % WIDTH
-            self.y = (self.y - self.mag*sin(self.angle  + pi/2) + HEIGHT) % HEIGHT
-            movement[1] = self.mag*cos(self.angle  + pi/2)
-            movement[2] = - self.mag*sin(self.angle  + pi/2)
-        elif back:
-            self.x = (self.x - self.mag*cos(self.angle  + pi/2) + WIDTH) % WIDTH
-            self.y = (self.y + self.mag*sin(self.angle  + pi/2) + HEIGHT) % HEIGHT
-            movement[1] = - self.mag*cos(self.angle  + pi/2)
-            movement[2] = self.mag*sin(self.angle  + pi/2)
-
-
+        
         # print(movement)
         if shooting and self.loads != 0:
             mixer.Sound.play(assets.pop)
@@ -185,10 +181,10 @@ class Tank:
             self.loads = loads
         # print(time.get_ticks()%5000)
         for shot in self.shots:
-            if shot[X]  <= 0 or shot[X]>=screen.get_width():
+            if shot[X]  <= 0 or shot[X]>=self.surf.get_width():
                 shot[VX] = -shot[VX]
                 mixer.Sound.play(assets.ping)
-            if shot[Y] <= 0 or shot[Y] >= screen.get_height():
+            if shot[Y] <= 0 or shot[Y] >= self.surf.get_height():
                 shot[VY] = -shot[VY]
                 mixer.Sound.play(assets.pong)
             shot[X] += shot[VX]
@@ -199,9 +195,9 @@ class Tank:
                 del self.shots[i]
                 mixer.Sound.play(assets.shotVanish)
                 break
-            if 0 <= shot[X] <= screen.get_width() and 0 <= shot[Y] <= screen.get_height():
-                draw.circle(screen, self.col, shot[:2], self.bulletRad)
-        for tank in tanks:
+            if 0 <= shot[X] <= self.surf.get_width() and 0 <= shot[Y] <= self.surf.get_height():
+                draw.circle(self.surf, self.col, shot[:2], self.bulletRad)
+        for tank in self.tanks:
             if tank != self:
                 for i in range(len(tank.shots)):  
                     shot = tank.shots[i]
@@ -209,12 +205,17 @@ class Tank:
                         print(tank.name + '  destroyed  ' + self.name)
                         return 'end'
         
-
+# def deathDetect(tanks):
+#     for tank in tanks:
+#             if tank != self:
+#                 for i in range(len(tank.shots)):  
+#                     shot = tank.shots[i]
+#                     if pointInRect(tank.fatPoints, [shot[:2]]):
+#                         print(tank.name + '  destroyed  ' + self.name)
+#                         return 'end'
 
 # changed from 5 to 3 and the circle is now in the wrong position. 
-tankLeft = Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3, 'player1')
-tankRight = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3, 'player2')
-tanks = [tankLeft, tankRight]
+
                 
 
 
@@ -236,8 +237,6 @@ tanks = [tankLeft, tankRight]
 #     draw.circle(surf, (0,0,0), (x, y+offsetToDown), 5)
 
 
-def collision(tank, obj):
-    smartRect(obj.x, obj.y, obj.r, obj.spinRad, (tank.x, tank.y))
 
 
 

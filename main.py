@@ -28,9 +28,14 @@ xmax = SCREEN_WIDTH- wallwidth
 ymin = wallwidth
 ymax = SCREEN_HEIGHT - wallwidth
 
-def canGo():
+tankLeft = tank.Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3, 'player1')
+tankRight = tank.Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3, 'player2')
+Tanks = [tankLeft, tankRight]
+tankLeft.tanks, tankRight.tanks= Tanks, Tanks
+# Tanks = [tank.tankLeft, tank.tankRight]
 
-    return canGo
+
+
 while mainRunning:
     rightShoot,leftShoot = False, False
     for evt in pygame.event.get():
@@ -53,11 +58,16 @@ while mainRunning:
     #     if point[0] < xmin or point[0]> xmax or :
 
     
-    if tank.tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) == 'end' or tank.tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot) == 'end':
+    if tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) == 'end' or tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot) == 'end':
         pygame.mixer.Sound.play(assets.deathExplosion)
         pygame.time.delay(3000)
         mainRunning = False
 
+    for ta in Tanks:
+        if tank.touchingWalls(xmin,xmax, ymin, ymax, ta.basePoints):
+            ta.angle -= ta.movement[0]
+            ta.x     -= ta.movement[1]
+            ta.y     -= ta.movement[2]
 
     pygame.display.flip()
     pygame.time.Clock().tick(50)

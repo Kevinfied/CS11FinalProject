@@ -66,9 +66,13 @@ while mainRunning:
 
 
     dummy.update(0, 0, 0, 1, random.choice(lis))
-    if tank.deathDetect(Tanks):
-        
+    deadone = tank.deathDetect(Tanks)
+    if deadone:
         pygame.mixer.Sound.play(assets.deathExplosion)
+        for i in range(8):
+            screen.blit(assets.explosions[i], [deadone.x, deadone.y])
+            pygame.time.delay(50)
+            pygame.display.flip()
         pygame.time.delay(3000)
         mainRunning = False
 

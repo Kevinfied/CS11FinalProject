@@ -209,7 +209,7 @@ def deathDetect(tanks):
                     shot = shooter.shots[i]
                     if pointInRect(target.fatPoints, [shot[:2]]):
                         print(shooter.name + '  destroyed  ' + target.name)
-                        return shooter.name + '  destroyed  ' + target.name
+                        return target
     
 
 # changed from 5 to 3 and the circle is now in the wrong position. 

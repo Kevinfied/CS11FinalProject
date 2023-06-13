@@ -34,7 +34,7 @@ dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 
 dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
 Tanks = [tankLeft, tankRight,dummy]
-
+# del Tanks[2]
 # Tanks = [tank.tankLeft, tank.tankRight]
 lis = [0 for i in range(50)] + [1]
 
@@ -57,21 +57,24 @@ while mainRunning:
     # for map in level.map1:
     #     pygame.draw.rect(screen, (0,0,0), map)
 
-    # for point in tank.tankLeft.basePoints:
-    #     if point[0] < xmin or point[0]> xmax or :
+   
 
     # print(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot,"      ", keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
     tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) 
     tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
+    dummy.update(0, 0, 0, 1, 0)
 
 
-    dummy.update(0, 0, 0, 1, random.choice(lis))
     deadone = tank.deathDetect(Tanks)
     if deadone:
         pygame.mixer.Sound.play(assets.deathExplosion)
+        _ = screen.copy()
         for i in range(8):
-            screen.blit(assets.explosions[i], [deadone.x, deadone.y])
-            pygame.time.delay(50)
+            screen.blit(_, (0,0))
+            assets.explosions[i] = pygame.transform.scale(assets.explosions[i], (deadone.scale*100, deadone.scale*100))
+            heherect = assets.explosions[i].get_rect(center = (deadone.x, deadone.y))
+            screen.blit(assets.explosions[i], heherect)
+            pygame.time.delay(100)
             pygame.display.flip()
         pygame.time.delay(3000)
         mainRunning = False
@@ -82,6 +85,7 @@ while mainRunning:
             ta.x     -= ta.movement[1]
             ta.y     -= ta.movement[2]
     
+
 
     pygame.display.flip()
     pygame.time.Clock().tick(50)

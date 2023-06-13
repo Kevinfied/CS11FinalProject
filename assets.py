@@ -47,4 +47,4 @@ clashFontM = font.Font("assets/font/CR.ttf", 20)
 clashFontL = font.Font("assets/font/CR.ttf", 25)
 explosions = []
 for i in range(1,9):
-    explosions.append(transform.scale(image.load("assets/explosion" + str(i)) + ".png", (100,100)))
+    explosions.append(transform.scale(image.load("assets/explosion" + str(i) + ".png"), (100,100)))

@@ -3,8 +3,8 @@ import assets
 import tank
 import os
 import level
-
-
+import random
+from math import *
 
 pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)
@@ -28,12 +28,15 @@ xmax = SCREEN_WIDTH- wallwidth
 ymin = wallwidth
 ymax = SCREEN_HEIGHT - wallwidth
 
-tankLeft = tank.Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 3, 'player1')
-tankRight = tank.Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 3, 'player2')
-Tanks = [tankLeft, tankRight]
-tankLeft.tanks, tankRight.tanks= Tanks, Tanks
-# Tanks = [tank.tankLeft, tank.tankRight]
+tankLeft = tank.Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 1, 'player1')
+tankRight = tank.Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 1, 'player2')
+dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 3, 'dummy')
+dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
+Tanks = [tankLeft, tankRight,dummy]
+
+# Tanks = [tank.tankLeft, tank.tankRight]
+lis = [0 for i in range(50)] + [1]
 
 
 while mainRunning:
@@ -57,8 +60,14 @@ while mainRunning:
     # for point in tank.tankLeft.basePoints:
     #     if point[0] < xmin or point[0]> xmax or :
 
-    
-    if tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) == 'end' or tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot) == 'end':
+    # print(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot,"      ", keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
+    tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) 
+    tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
+
+
+    dummy.update(0, 0, 0, 1, random.choice(lis))
+    if tank.deathDetect(Tanks):
+        
         pygame.mixer.Sound.play(assets.deathExplosion)
         pygame.time.delay(3000)
         mainRunning = False
@@ -68,6 +77,7 @@ while mainRunning:
             ta.angle -= ta.movement[0]
             ta.x     -= ta.movement[1]
             ta.y     -= ta.movement[2]
+    
 
     pygame.display.flip()
     pygame.time.Clock().tick(50)

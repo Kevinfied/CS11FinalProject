@@ -95,6 +95,7 @@ class Tank:
         self.loads = loads
 
         self.tanks = []
+        self.reloadPeriod = reloadPeriod
     def update(self,forward, back, left, right,shooting):
         
             
@@ -124,7 +125,7 @@ class Tank:
 
         self.surf.blit(rotated_image, bounding_rect)
         self.basePoints = []
-        fatPoints = []
+        self.fatPoints = []
 
         h1 = (21*2**0.5) * self.scale
         h2 = (21**2 + 31**2)**0.5 * self.scale
@@ -141,10 +142,10 @@ class Tank:
         for i in range(4):
             if i//2 == 0:
                 self.basePoints.append([rotatedCenter[0]+ h1* cos(theta[i] + self.angle), rotatedCenter[1] - h1 * sin(theta[i] + self.angle)])
-                fatPoints.append([rotatedCenter[0]+ (h1+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h1+self.bulletRad) * sin(theta[i] + self.angle)])
+                self.fatPoints.append([rotatedCenter[0]+ (h1+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h1+self.bulletRad) * sin(theta[i] + self.angle)])
             else:
                 self.basePoints.append([rotatedCenter[0]+ h2* cos(theta[i] + self.angle), rotatedCenter[1] - h2 * sin(theta[i] + self.angle)])
-                fatPoints.append([rotatedCenter[0]+ (h2+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h2+self.bulletRad) * sin(theta[i] + self.angle)])
+                self.fatPoints.append([rotatedCenter[0]+ (h2+self.bulletRad)* cos(theta[i] + self.angle), rotatedCenter[1] - (h2+self.bulletRad) * sin(theta[i] + self.angle)])
         
         
         for i in range(4,8):
@@ -155,7 +156,7 @@ class Tank:
 
         for point in self.basePoints:
             draw.circle(self.surf, self.col, point, 3)
-        for point in fatPoints:
+        for point in self.fatPoints:
             draw.circle(self.surf, self.col, point, 3)
         
 
@@ -173,11 +174,11 @@ class Tank:
         # print(movement)
         if shooting and self.loads != 0:
             mixer.Sound.play(assets.pop)
-            muzX, muzY = (fatPoints[0][0]+fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (fatPoints[0][1]+fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
+            muzX, muzY = (self.fatPoints[0][0]+self.fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (self.fatPoints[0][1]+self.fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
             vx,vy = velComponents(self.angle, self.bulletVel)
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
             self.loads -= 1
-        if 0<= time.get_ticks()%5000 <= margin:
+        if 0<= time.get_ticks()% self.reloadPeriod <= margin:
             self.loads = loads
         # print(time.get_ticks()%5000)
         for shot in self.shots:
@@ -197,22 +198,19 @@ class Tank:
                 break
             if 0 <= shot[X] <= self.surf.get_width() and 0 <= shot[Y] <= self.surf.get_height():
                 draw.circle(self.surf, self.col, shot[:2], self.bulletRad)
-        for tank in self.tanks:
-            if tank != self:
-                for i in range(len(tank.shots)):  
-                    shot = tank.shots[i]
-                    if pointInRect(fatPoints, [shot[:2]]):
-                        print(tank.name + '  destroyed  ' + self.name)
-                        return 'end'
         
-# def deathDetect(tanks):
-#     for tank in tanks:
-#             if tank != self:
-#                 for i in range(len(tank.shots)):  
-#                     shot = tank.shots[i]
-#                     if pointInRect(tank.fatPoints, [shot[:2]]):
-#                         print(tank.name + '  destroyed  ' + self.name)
-#                         return 'end'
+                    
+
+def deathDetect(tanks):
+    for shooter in tanks:
+        for target in tanks:
+            if shooter != target:
+                for i in range(len(shooter.shots)):  
+                    shot = shooter.shots[i]
+                    if pointInRect(target.fatPoints, [shot[:2]]):
+                        print(shooter.name + '  destroyed  ' + target.name)
+                        return shooter.name + '  destroyed  ' + target.name
+    
 
 # changed from 5 to 3 and the circle is now in the wrong position. 
 

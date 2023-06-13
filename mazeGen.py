@@ -13,11 +13,11 @@ screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("Maze Generator")
 
-done = False
+running = True
 
 clock = pygame.time.Clock()
 
-width = 25
+width = 50
 cols = int(size[0] / width)
 rows = int(size[1] / width)
 
@@ -120,12 +120,12 @@ current_cell = grid[0][0]
 next_cell = 0
 
 # -------- Main Program Loop -----------
-while not done:
+while running:
     # --- Main event loop
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            done = True
-    
+            running = False
+
     screen.fill(GREY)
     
     current_cell.visited = True
@@ -165,6 +165,6 @@ while not done:
     
     pygame.display.flip()
     
-    clock.tick(100)
+    clock.tick(60)
 
 pygame.quit()

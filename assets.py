@@ -38,6 +38,13 @@ ping = mixer.Sound("assets/sounds/ping.mp3")
 pong = mixer.Sound("assets/sounds/pong.mp3")
 shotVanish = mixer.Sound("assets/sounds/shotVanish.mp3")
 
+
+
+# Font
+font.init()
+clashFontS = font.Font("assets/font/CR.ttf", 14)
+clashFontM = font.Font("assets/font/CR.ttf", 20)
+clashFontL = font.Font("assets/font/CR.ttf", 25)
 explosions = []
 for i in range(1,9):
     explosions.append(transform.scale(image.load("assets/explosion" + str(i)) + ".png", (100,100)))

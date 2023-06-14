@@ -6,15 +6,19 @@ import assets
 SCREEN_WIDTH = 1180
 SCREEN_HEIGHT = 768
 
-def hoverButton(button, mx, my):
-    if button.collidepoint(mx, my):
-        draw.rect(screen, (211,211,255), button)
-        draw.rect(screen, (255,0,0), button,2)
-        return True
-    else:
-        draw.rect(screen, (111,111,155), button)
-        draw.rect(screen, (255,255,0), button,2)
-        return False
+def hoverButton(button):
+    button = Rect(button[0], button[1], button[2], button[3])
+    buttonX = button[0]
+    buttonY = button[1]
+    buttonWidth = button[2]
+    buttonHeight = button[3]
+
+    if buttonWidth < 250:
+
+    
+    return button
+
+    
 
 
 def mainMenu(screenWidth, screenHeight):
@@ -23,7 +27,8 @@ def mainMenu(screenWidth, screenHeight):
     rects = []
     play1Rect = Rect(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100, 200, 50)
     play2Rect = Rect(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2, 200, 50)
-
+    button1Hover = False
+    button2Hover = False
     while running:
         for evt in event.get():
             if evt.type == QUIT:
@@ -31,14 +36,32 @@ def mainMenu(screenWidth, screenHeight):
             if evt.type == MOUSEBUTTONDOWN:
                 if play1Rect.collidepoint(mx, my):
                     play1(screenWidth, screenHeight)
+                    return
                 elif play2Rect.collidepoint(mx, my):
-                    return 2
-        
-        mainScreen.fill((0,0,0))
+                    return
         mx, my = mouse.get_pos()
         mb = mouse.get_pressed()
-        draw.rect(mainScreen, (255,255,255), play1Rect)
-        draw.rect(mainScreen, (255,255,255), play2Rect)
+
+
+        mainScreen.fill((255, 255, 255))
+
+        draw.rect(mainScreen, (0, 0, 255), play1Rect, 200, 20)
+        draw.rect(mainScreen, (0, 0,255), play2Rect, 200, 20)
+
+        
+        if play1Rect.collidepoint(mx, my):
+            if mb[0] == 0:
+                button1Hover = True
+                buttonH1 = hoverButton(play1Rect)
+                draw.rect(mainScreen, (0, 0, 255), buttonH1, 200, 20)
+                # hoverButton(mainScreen, play1Rect, mx, my)
+        elif play2Rect.collidepoint(mx, my):
+            if mb[0] == 0:
+                hoverButton(mainScreen, play2Rect, mx, my)
+
+        if button1Hover == False:
+            
+                
         display.flip()
         
     return

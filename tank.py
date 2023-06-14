@@ -160,10 +160,6 @@ class Tank:
             draw.circle(self.surf, self.col, point, 3)
         
 
-        
-       # Mr. pants was here
-        
-        
         draw.circle(self.surf, self.col, (self.x, self.y), 3)
         draw.circle(self.surf, self.col, rotatedCenter, 3) 
         draw.rect(self.surf, self.col, bounding_rect, 2)

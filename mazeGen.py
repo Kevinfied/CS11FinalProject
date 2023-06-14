@@ -13,6 +13,19 @@ screen = pygame.display.set_mode(size)
 
 pygame.display.set_caption("Maze Generator")
 
+def save(grid, fname):
+    out = open(fname, "w")
+    for lst in grid:
+        for v in lst:
+            out.write(f"{v} ")
+        out.write("\n")
+    out.close()
+def load(fname):
+    if fname in glob.glob("*"):
+        return [list(map(int, line.split())) for line in open(fname).read().split("\n")]
+    else:
+        return [[0]*GRID_H for i in range(GRID_W)]
+    
 running = True
 
 clock = pygame.time.Clock()

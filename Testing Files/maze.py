@@ -1,6 +1,6 @@
 from pygame import *
 from random import *
-
+from pprint import *
 screen = display.set_mode( (800, 600) )
 running = True
 BLACK = (0,0,0)
@@ -10,21 +10,59 @@ gridSize = 100
 
 width = screen.get_width()//gridSize
 height = screen.get_height()//gridSize
-short = 10
+
+horizontalLines = []
+verticalLines   = []
+lines = []
+
+
+possibility = [ 0 for i in range(8)]+ [1]
+def gridGen():
+    
+    for y in range(height):
+        horizontalLines.append([])
+        verticalLines.append([])
+        for x in range(width):
+            horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+            verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+        
+        # for y in range(height):
+        #     for x in range(width):
+        #         horizontalLines[y][x].append()
+
+pprint(horizontalLines)
+pprint(verticalLines)
+
+
+thickness = 10
 screen.fill(WHITE)
 rects = 0
 
-
+gridGen()
 while running:
     for evnt in event.get():
         if evnt == QUIT:
             running = False
-    if rects < 20:
-        if randint(0,1):
-            draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, short, randint(0,height)* gridSize))
-        else:
-            draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, randint(0, width) * gridSize, short))
-        rects += 1
+        if evnt == MOUSEBUTTONDOWN:
+            print('dslfslfj')
+            # horizontalLines = []
+            # verticalLines   = []
+            # pprint(horizontalLines); pprint(verticalLines)
+            # gridGen()
+
+    # if rects < 20:
+    #     if randint(0,1):
+    #         draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, short, randint(0,height)* gridSize))
+    #     else:
+    #         draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, randint(0, width) * gridSize, short))
+    #     rects += 1
+    screen.fill(WHITE)
+    for y in range(height):
+        for x in range(width):
+            if horizontalLines[y][x][4]:
+                draw.line(screen, BLACK, (horizontalLines[y][x][0], horizontalLines[y][x][1]), (horizontalLines[y][x][2], horizontalLines[y][x][3]),thickness)
+            if verticalLines[y][x][4]:
+                draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness) 
     display.flip()
 quit()
 

@@ -54,19 +54,27 @@ def gridGen():
         horizontalLines.append([])
         verticalLines.append([])
         for x in range(width+1):
-            # if y == 0 or y == height-1:
-            #     horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
-            #     verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
-            # else:
-            if y == 0 or y == height:
-                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
-                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
-            if x == 0 or x == width:
-                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
-                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1])
+            if (y == 0 or y == height): 
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1]) #1
+                
+                if (x == 0 or x == width) and y != height:
+                    verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1]) #1
+                else:
+                    verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)]) #choi
+            elif (x == 0 or x == width):
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1]) #1
+                
+                
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)]) #choi
             else:
                 horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
                 verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+    # horizontalLines.append([])
+    # verticalLines.append([])
+    # horizontalLines[-1].append([2*gridSize, 2*gridSize, 3*gridSize, 2*gridSize, 1])
+    # horizontalLines[-1].append([2*gridSize, 2*gridSize, 3*gridSize, 2*gridSize, 0])
+    # verticalLines[-1].append([2*gridSize, 2*gridSize, 2*gridSize, 3*gridSize, 1])
+    # verticalLines[-1].append([2*gridSize, 2*gridSize, 2*gridSize, 3*gridSize, 1])
         
 def gridDraw():
     for y in range(len(horizontalLines)):
@@ -131,6 +139,7 @@ while mainRunning:
 
 
     deadone = tank.deathDetect(Tanks)
+    deadone = None
     if deadone:
         pygame.mixer.Sound.play(assets.deathExplosion)
         _ = screen.copy()

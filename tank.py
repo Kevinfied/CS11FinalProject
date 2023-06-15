@@ -46,7 +46,7 @@ joystick.init()
 
 bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
 reloadPeriod = 5000 #reload time 
-loads = 5 # 5 shots per reload
+loads = 50 # 5 shots per reload
 margin = 50 # to account for the rough resolution of get_ticks()
 X = 0 
 Y = 1
@@ -95,7 +95,7 @@ class Tank:
         self.angVel = 2*pi/90
         self.mag = 8
 
-        self.bulletVel = 12
+        self.bulletVel = 9
         self.bulletRad = 5 * scale
         self.shots = []
         self.loads = loads
@@ -170,10 +170,7 @@ class Tank:
         draw.circle(self.surf, self.col, rotatedCenter, 3) 
         draw.rect(self.surf, self.col, bounding_rect, 2)
         
-        
 
-        
-        # print(movement)
         if shooting and self.loads != 0:
             mixer.Sound.play(assets.pop)
             muzX, muzY = (self.fatPoints[0][0]+self.fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (self.fatPoints[0][1]+self.fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
@@ -182,7 +179,6 @@ class Tank:
             self.loads -= 1
         if 0<= time.get_ticks()% self.reloadPeriod <= margin:
             self.loads = loads
-        # print(time.get_ticks()%5000)
         for shot in self.shots:
             # if shot[X]  <= 0 or shot[X]>=self.surf.get_width():
             #     shot[VX] = -shot[VX]

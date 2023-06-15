@@ -49,9 +49,10 @@ while running:
         if evnt.type == QUIT:
             running = False
         if evnt.type == MOUSEBUTTONDOWN:
-            
+            print('dslfslfj')
             horizontalLines = []
             verticalLines   = []
+            pprint(horizontalLines); pprint(verticalLines)
             gridGen()
 
     # if rects < 20:
@@ -60,6 +61,10 @@ while running:
     #     else:
     #         draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, randint(0, width) * gridSize, short))
     #     rects += 1
+    horizontalLines = []
+    verticalLines   = []
+    pprint(horizontalLines); pprint(verticalLines)
+    gridGen()
     screen.fill(WHITE)
     for y in range(height):
         for x in range(width):

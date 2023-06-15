@@ -18,7 +18,7 @@ lines = []
 
 possibility = [ 0 for i in range(8)]+ [1]
 def gridGen():
-    for y in range(height):
+    # for y in range(height):
     
     for y in range(height+1):
         horizontalLines.append([])

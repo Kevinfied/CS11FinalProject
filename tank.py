@@ -69,6 +69,12 @@ def touchingWalls(xmin, xmax, ymin, ymax, points):
     return False
 
 
+def bounceSound(soundName):
+    if soundName == 'ping':
+        mixer.Sound.play(assets.ping)
+    if soundName == 'pong':
+        mixer.Sound.play(assets.pong)
+        
 class Tank:
     def __init__(self,surf, img, x, y, angle, col, scale, name):
         self.surf = surf

@@ -35,7 +35,7 @@ dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 
 dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
 Tanks = [tankLeft, tankRight,dummy]
-# del Tanks[2]
+del Tanks[2]
 # Tanks = [tank.tankLeft, tank.tankRight]
 lis = [0 for i in range(50)] + [1]
 
@@ -68,12 +68,20 @@ def gridDraw():
 def ifHitWalls():
     for y in range(height):
         for x in range(width):
-            if horizontalLines[y][x][4]:
+            
                 for ta in Tanks:
                     for shot in ta.shots:
-                        if horizontalLines[y][x][0] <= shot[tank.X] and shot[tank.X] <= horizontalLines[y][x][2]:
+                        if horizontalLines[y][x][4] and horizontalLines[y][x][0] <= shot[tank.X] and shot[tank.X] <= horizontalLines[y][x][2]:
+                            # print('inRange')
                             if shot[tank.Y] <= horizontalLines[y][x][1] + thickness/2 + ta.bulletRad and shot[tank.Y] >= horizontalLines[y][x][1] - thickness/2 - ta.bulletRad:
                                 shot[tank.VY] = -shot[tank.VY]
+                                tank.bounceSound('pong')
+                        if verticalLines[y][x][4] and verticalLines[y][x][1] <= shot[tank.Y] and shot[tank.Y] <= verticalLines[y][x][3]:
+                            # print('inRange')
+                            if shot[tank.X] <= verticalLines[y][x][0] + thickness/2 + ta.bulletRad and shot[tank.X] >= verticalLines[y][x][0] - thickness/2 - ta.bulletRad:
+                                shot[tank.VX] = -shot[tank.VX]
+                                tank.bounceSound('ping')
+                    
             # if verticalLines[y][x][4:]:
 
 
@@ -107,7 +115,8 @@ while mainRunning:
     # print(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot,"      ", keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
     tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) 
     tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
-    dummy.update(0, 0, 0, 1, 0)
+    if len(Tanks) == 3:
+        dummy.update(0, 0, 0, 1, 0)
 
 
     deadone = tank.deathDetect(Tanks)

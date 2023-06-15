@@ -45,6 +45,7 @@ font.init()
 clashFontS = font.Font("assets/font/CR.ttf", 14)
 clashFontM = font.Font("assets/font/CR.ttf", 20)
 clashFontL = font.Font("assets/font/CR.ttf", 25)
+clashFontXL = font.Font("assets/font/CR.ttf", 35)
 clashFontTitle = font.Font("assets/font/CR.ttf", 80)
 explosions = []
 for i in range(1,9):

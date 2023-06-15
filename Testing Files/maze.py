@@ -19,12 +19,19 @@ lines = []
 possibility = [ 0 for i in range(8)]+ [1]
 def gridGen():
     for y in range(height):
+    
+    for y in range(height+1):
         horizontalLines.append([])
         verticalLines.append([])
-        for x in range(width):
-            horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
-            verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
-        
+        for x in range(width+1):
+            if y == 0 or y == height:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            else:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            
+
         # for y in range(height):
         #     for x in range(width):
         #         horizontalLines[y][x].append()
@@ -66,6 +73,7 @@ while running:
             if verticalLines[y][x][4]:
                 draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness) 
     draw.rect(screen, (0,0,0), (0, 0,800, 600), 10)
+    # draw.line(screen, BLACK, (0,600), (800, 600),10)
     display.flip()
 quit()
 

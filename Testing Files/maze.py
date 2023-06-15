@@ -6,8 +6,8 @@ running = True
 BLACK = (0,0,0)
 WHITE = (255, 255, 255)
 
-gridSize = 100
 
+gridSize = 100
 width = screen.get_width()//gridSize
 height = screen.get_height()//gridSize
 
@@ -18,7 +18,6 @@ lines = []
 
 possibility = [ 0 for i in range(8)]+ [1]
 def gridGen():
-    
     for y in range(height):
         horizontalLines.append([])
         verticalLines.append([])
@@ -44,10 +43,8 @@ while running:
         if evnt.type == QUIT:
             running = False
         if evnt.type == MOUSEBUTTONDOWN:
-            print('dslfslfj')
             horizontalLines = []
             verticalLines   = []
-            pprint(horizontalLines); pprint(verticalLines)
             gridGen()
 
     # if rects < 20:
@@ -56,17 +53,19 @@ while running:
     #     else:
     #         draw.rect(screen, BLACK, (randint(0,width)* gridSize, randint(0,height) * gridSize, randint(0, width) * gridSize, short))
     #     rects += 1
-    horizontalLines = []
-    verticalLines   = []
-    pprint(horizontalLines); pprint(verticalLines)
-    gridGen()
+    # horizontalLines = []
+    # verticalLines   = []
+    # pprint(horizontalLines); pprint(verticalLines)
+    # gridGen()
     screen.fill(WHITE)
+
     for y in range(height):
         for x in range(width):
             if horizontalLines[y][x][4]:
                 draw.line(screen, BLACK, (horizontalLines[y][x][0], horizontalLines[y][x][1]), (horizontalLines[y][x][2], horizontalLines[y][x][3]),thickness)
             if verticalLines[y][x][4]:
                 draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness) 
+    draw.rect(screen, (0,0,0), (0, 0,800, 600), 10)
     display.flip()
 quit()
 

@@ -84,23 +84,35 @@ def gridDraw():
             if verticalLines[y][x][4]:
                 pygame.draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness)  
 
+
+def within(min, val, ma):
+    if min <= val and val <= ma:
+        return True
+    return False
+
 def ifHitWalls():
     for y in range(len(horizontalLines)):
         for x in range(len(horizontalLines[y])):
             
                 for ta in Tanks:
                     for shot in ta.shots:
-                        if horizontalLines[y][x][4] and horizontalLines[y][x][0] <= shot[tank.X] and shot[tank.X] <= horizontalLines[y][x][2]:
-                            # print('inRange')
-                            if shot[tank.Y] <= horizontalLines[y][x][1] + thickness/2 + ta.bulletRad and shot[tank.Y] >= horizontalLines[y][x][1] - thickness/2 - ta.bulletRad:
+                        if horizontalLines[y][x][4]:
+                            if within(horizontalLines[y][x][1] - thickness/2 - ta.bulletRad, shot[tank.Y] , horizontalLines[y][x][1] + thickness/2 + ta.bulletRad) and within(horizontalLines[y][x][0], shot[tank.X], horizontalLines[y][x][2]):
                                 shot[tank.VY] = -shot[tank.VY]
                                 tank.bounceSound('pong')
-                        if verticalLines[y][x][4] and verticalLines[y][x][1] <= shot[tank.Y] and shot[tank.Y] <= verticalLines[y][x][3]:
-                            # print('inRange')
-                            if shot[tank.X] <= verticalLines[y][x][0] + thickness/2 + ta.bulletRad and shot[tank.X] >= verticalLines[y][x][0] - thickness/2 - ta.bulletRad:
+                            elif within(horizontalLines[y][x][1] - thickness/2, shot[tank.Y], horizontalLines[y][x][1] + thickness/2) and within(horizontalLines[y][x][0] - ta.bulletRad, shot[tank.X], horizontalLines[y][x][0] + ta.bulletRad):
                                 shot[tank.VX] = -shot[tank.VX]
                                 tank.bounceSound('ping')
-                    
+                            
+                        if verticalLines[y][x][4]:
+                            
+                            if within(verticalLines[y][x][0] - thickness/2 - ta.bulletRad, shot[tank.X], verticalLines[y][x][0] + thickness/2 + ta.bulletRad) and within(verticalLines[y][x][1], shot[tank.Y], verticalLines[y][x][3]):
+                                shot[tank.VX] = -shot[tank.VX]
+                                tank.bounceSound('ping')
+                        
+                            elif within(verticalLines[y][x][0] - thickness/2, shot[tank.X], verticalLines[y][x][0] + thickness/2) and within(verticalLines[y][x][1] - ta.bulletRad, shot[tank.Y], verticalLines[y][x][3] + ta.bulletRad):
+                                shot[tank.VY] = -shot[tank.VY]
+                                tank.bounceSound('pong')
             # if verticalLines[y][x][4:]:
 
 

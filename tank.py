@@ -95,7 +95,7 @@ class Tank:
         self.angVel = 2*pi/90
         self.mag = 8
 
-        self.bulletVel = 9
+        self.bulletVel = 4
         self.bulletRad = 5 * scale
         self.shots = []
         self.loads = loads

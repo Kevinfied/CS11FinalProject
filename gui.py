@@ -6,27 +6,36 @@ import assets
 SCREEN_WIDTH = 1180
 SCREEN_HEIGHT = 768
 
-def hoverButton(button):
-    button = Rect(button[0], button[1], button[2], button[3])
-    buttonX = button[0]
-    buttonY = button[1]
-    buttonWidth = button[2]
-    buttonHeight = button[3]
+# def hoverButton(button):
+#     button = Rect(button[0], button[1], button[2], button[3])
+#     buttonX = button[0]
+#     buttonY = button[1]
+#     buttonWidth = button[2]
+#     buttonHeight = button[3]
 
-    if buttonWidth < 250:
-
-    
-    return button
+#     if buttonWidth < 250:
 
     
+#     return button
+
+# def drawButton(button, mx, my):
+#     buttonX = button[0]
+#     buttonY = button[1]
+#     buttonWidth = button[2]
+#     buttonHeight = button[3]
 
 
-def mainMenu(screenWidth, screenHeight):
-    mainScreen = display.set_mode((screenWidth, screenHeight))
+    
+
+
+def mainMenu():
+    init()
+    mainMenuClock = time.Clock()
+    mainScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     running = True
-    rects = []
-    play1Rect = Rect(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100, 200, 50)
-    play2Rect = Rect(SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2, 200, 50)
+    rects = [Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100), Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4) * 3, 400, 100)]
+    play1Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100)
+    play2Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4) * 3, 400, 100)
     button1Hover = False
     button2Hover = False
     while running:
@@ -35,7 +44,7 @@ def mainMenu(screenWidth, screenHeight):
                 quit()
             if evt.type == MOUSEBUTTONDOWN:
                 if play1Rect.collidepoint(mx, my):
-                    play1(screenWidth, screenHeight)
+                    play1(SCREEN_WIDTH, SCREEN_HEIGHT)
                     return
                 elif play2Rect.collidepoint(mx, my):
                     return
@@ -45,26 +54,71 @@ def mainMenu(screenWidth, screenHeight):
 
         mainScreen.fill((255, 255, 255))
 
-        draw.rect(mainScreen, (0, 0, 255), play1Rect, 200, 20)
-        draw.rect(mainScreen, (0, 0,255), play2Rect, 200, 20)
+        titleTxt = assets.clashFontTitle.render("Tank Trouble", True, (0, 0, 0))
+        titleRect = titleTxt.get_rect()
+        titleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
+        mainScreen.blit(titleTxt, (titleRect))
 
-        
+        play1txt = assets.clashFontL.render("Play", True, (0, 0, 0))
+        play1txtRect = play1txt.get_rect()
+        play1txtRect.center = (590, 476)
+
+        draw.rect(mainScreen, (0, 0, 255), play1Rect, 50, 10)
+        mainScreen.blit(play1txt, (play1txtRect))
+        draw.rect(mainScreen, (0, 0,255), play2Rect, 50, 10)
+
         if play1Rect.collidepoint(mx, my):
             if mb[0] == 0:
                 button1Hover = True
-                buttonH1 = hoverButton(play1Rect)
-                draw.rect(mainScreen, (0, 0, 255), buttonH1, 200, 20)
+                buttonH1 = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100)
+                draw.rect(mainScreen, (0, 0, 255), buttonH1, 50, 10)
                 # hoverButton(mainScreen, play1Rect, mx, my)
-        elif play2Rect.collidepoint(mx, my):
-            if mb[0] == 0:
-                hoverButton(mainScreen, play2Rect, mx, my)
+        
+        # if play1Rect.collidepoint(mx, my):
+        #     if mb[0] == 0:
+        #         button1Hover = True
+        #         buttonH1 = hoverButton(play1Rect)
+        #         draw.rect(mainScreen, (0, 0, 255), buttonH1, 200, 20)
+        #         # hoverButton(mainScreen, play1Rect, mx, my)
+        # elif play2Rect.collidepoint(mx, my):
+        #     if mb[0] == 0:
+        #         hoverButton(mainScreen, play2Rect, mx, my)
 
-        if button1Hover == False:
-            
-                
+        # if button1Hover == False:
+
+    
+        "USE time.wait() for the button hover effect so it doesnt change the tick speed"
+
+        # mainMenuClock.tick(60)
         display.flip()
         
     return
+
+
+
+
+
+
+
+def gameOverScreen():
+    return
+
+def settingsScreen():
+    # Save settings in file i/o
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def play1(screenWidth, screenHeight):
     play1Screen = display.set_mode((screenWidth, screenHeight))
@@ -77,17 +131,19 @@ def play1(screenWidth, screenHeight):
         for evt in event.get():
             if evt.type == QUIT:
                 quit()
-            if evt.type == MOUSEBUTTONDOWN:
-                if play1Rect.collidepoint(mx, my):
-                    return 1
-                elif play2Rect.collidepoint(mx, my):
-                    return 2
+            # if evt.type == MOUSEBUTTONDOWN:
+            #     if play1Rect.collidepoint(mx, my):
+            #         return 1
+            #     elif play2Rect.collidepoint(mx, my):
+            #         return 2
         
         play1Screen.fill((0,0,0))
         mx, my = mouse.get_pos()
         mb = mouse.get_pressed()
-        draw.rect(play1Screen, (255,255,255), play1Rect)
-        draw.rect(play1Screen, (255,255,255), play2Rect)
+        play1txt = assets.clashFontL.render("Play 1", True, (255,255,255))
+        play1Screen.blit(play1txt, (SCREEN_WIDTH/2-100, SCREEN_HEIGHT/2-100))
+        # draw.rect(play1Screen, (255,255,255), play1Rect)
+        # draw.rect(play1Screen, (255,255,255), play2Rect)
         display.flip()
         
     return
@@ -119,7 +175,7 @@ def pauseMenu(screenWidth, screenHeight):
     return
 # # font is assets.ClashFontS, M, or L
 
-mainMenu(SCREEN_WIDTH, SCREEN_HEIGHT)
+mainMenu()
 
 
 

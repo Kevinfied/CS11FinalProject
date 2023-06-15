@@ -11,8 +11,8 @@ pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)
 
 mainRunning = True
-SCREEN_WIDTH = 1180
-SCREEN_HEIGHT = 768
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLACK = (0,0,0)
@@ -50,24 +50,35 @@ width = screen.get_width()//gridSize
 height = screen.get_height()//gridSize
 thickness = 10
 def gridGen():
-    for y in range(height):
+    for y in range(height+1):
         horizontalLines.append([])
         verticalLines.append([])
-        for x in range(width):
-            horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
-            verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+        for x in range(width+1):
+            # if y == 0 or y == height-1:
+            #     horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
+            #     verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            # else:
+            if y == 0 or y == height:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            if x == 0 or x == width:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1])
+            else:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
         
 def gridDraw():
-    for y in range(height):
-        for x in range(width):
+    for y in range(len(horizontalLines)):
+        for x in range(len(horizontalLines[y])):
             if horizontalLines[y][x][4]:
                 pygame.draw.line(screen, BLACK, (horizontalLines[y][x][0], horizontalLines[y][x][1]), (horizontalLines[y][x][2], horizontalLines[y][x][3]),thickness)
             if verticalLines[y][x][4]:
                 pygame.draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness)  
 
 def ifHitWalls():
-    for y in range(height):
-        for x in range(width):
+    for y in range(len(horizontalLines)):
+        for x in range(len(horizontalLines[y])):
             
                 for ta in Tanks:
                     for shot in ta.shots:
@@ -105,8 +116,8 @@ while mainRunning:
 
     keyArray = pygame.key.get_pressed()
 
-    screen.fill(BLACK)
-    pygame.draw.rect(screen, GREY, space)
+    screen.fill(GREY)
+    # pygame.draw.rect(screen, GREY, space)
     # for map in level.map1:
     #     pygame.draw.rect(screen, (0,0,0), map)
 

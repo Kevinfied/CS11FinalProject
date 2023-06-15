@@ -69,6 +69,12 @@ def touchingWalls(xmin, xmax, ymin, ymax, points):
     return False
 
 
+def bounceSound(soundName):
+    if soundName == 'ping':
+        mixer.Sound.play(assets.ping)
+    if soundName == 'pong':
+        mixer.Sound.play(assets.pong)
+
 class Tank:
     def __init__(self,surf, img, x, y, angle, col, scale, name):
         self.surf = surf
@@ -178,12 +184,12 @@ class Tank:
             self.loads = loads
         # print(time.get_ticks()%5000)
         for shot in self.shots:
-            if shot[X]  <= 0 or shot[X]>=self.surf.get_width():
-                shot[VX] = -shot[VX]
-                mixer.Sound.play(assets.ping)
-            if shot[Y] <= 0 or shot[Y] >= self.surf.get_height():
-                shot[VY] = -shot[VY]
-                mixer.Sound.play(assets.pong)
+            # if shot[X]  <= 0 or shot[X]>=self.surf.get_width():
+            #     shot[VX] = -shot[VX]
+            #     mixer.Sound.play(assets.ping)
+            # if shot[Y] <= 0 or shot[Y] >= self.surf.get_height():
+            #     shot[VY] = -shot[VY]
+            #     mixer.Sound.play(assets.pong)
             shot[X] += shot[VX]
             shot[Y] += shot[VY]
         for i in range(len(self.shots)):  

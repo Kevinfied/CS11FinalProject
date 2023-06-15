@@ -5,13 +5,14 @@ import os
 import level
 import random
 from math import *
+from random import *
 
 pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)
 
 mainRunning = True
-SCREEN_WIDTH = 1180
-SCREEN_HEIGHT = 768
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
 RED = (255,0,0)
 GREEN = (0,255,0)
 BLACK = (0,0,0)
@@ -34,9 +35,68 @@ dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 
 dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
 Tanks = [tankLeft, tankRight,dummy]
-# del Tanks[2]
+del Tanks[2]
 # Tanks = [tank.tankLeft, tank.tankRight]
 lis = [0 for i in range(50)] + [1]
+
+
+
+#map stuff
+gridSize = 100
+horizontalLines = []
+verticalLines   = []
+possibility = [ 0 for i in range(8)]+ [1]
+width = screen.get_width()//gridSize
+height = screen.get_height()//gridSize
+thickness = 10
+def gridGen():
+    for y in range(height+1):
+        horizontalLines.append([])
+        verticalLines.append([])
+        for x in range(width+1):
+            # if y == 0 or y == height-1:
+            #     horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
+            #     verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            # else:
+            if y == 0 or y == height:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, 1])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+            if x == 0 or x == width:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1])
+            else:
+                horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])
+                verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)])
+        
+def gridDraw():
+    for y in range(len(horizontalLines)):
+        for x in range(len(horizontalLines[y])):
+            if horizontalLines[y][x][4]:
+                pygame.draw.line(screen, BLACK, (horizontalLines[y][x][0], horizontalLines[y][x][1]), (horizontalLines[y][x][2], horizontalLines[y][x][3]),thickness)
+            if verticalLines[y][x][4]:
+                pygame.draw.line(screen, BLACK, (verticalLines[y][x][0],   verticalLines[y][x][1]),   (verticalLines[y][x][2], verticalLines[y][x][3]),thickness)  
+
+def ifHitWalls():
+    for y in range(len(horizontalLines)):
+        for x in range(len(horizontalLines[y])):
+            
+                for ta in Tanks:
+                    for shot in ta.shots:
+                        if horizontalLines[y][x][4] and horizontalLines[y][x][0] <= shot[tank.X] and shot[tank.X] <= horizontalLines[y][x][2]:
+                            # print('inRange')
+                            if shot[tank.Y] <= horizontalLines[y][x][1] + thickness/2 + ta.bulletRad and shot[tank.Y] >= horizontalLines[y][x][1] - thickness/2 - ta.bulletRad:
+                                shot[tank.VY] = -shot[tank.VY]
+                                tank.bounceSound('pong')
+                        if verticalLines[y][x][4] and verticalLines[y][x][1] <= shot[tank.Y] and shot[tank.Y] <= verticalLines[y][x][3]:
+                            # print('inRange')
+                            if shot[tank.X] <= verticalLines[y][x][0] + thickness/2 + ta.bulletRad and shot[tank.X] >= verticalLines[y][x][0] - thickness/2 - ta.bulletRad:
+                                shot[tank.VX] = -shot[tank.VX]
+                                tank.bounceSound('ping')
+                    
+            # if verticalLines[y][x][4:]:
+
+
+gridGen()
 
 
 while mainRunning:
@@ -49,11 +109,15 @@ while mainRunning:
                 leftShoot = True
             if evt.key == pygame.K_SLASH:
                 rightShoot = True
+        if evt.type == pygame.MOUSEBUTTONDOWN:
+            horizontalLines = []
+            verticalLines   = []
+            gridGen()
 
     keyArray = pygame.key.get_pressed()
 
-    screen.fill(BLACK)
-    pygame.draw.rect(screen, GREY, space)
+    screen.fill(GREY)
+    # pygame.draw.rect(screen, GREY, space)
     # for map in level.map1:
     #     pygame.draw.rect(screen, (0,0,0), map)
 
@@ -62,7 +126,8 @@ while mainRunning:
     # print(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot,"      ", keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
     tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) 
     tankRight.update(keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
-    dummy.update(0, 0, 0, 1, 0)
+    if len(Tanks) == 3:
+        dummy.update(0, 0, 0, 1, 0)
 
 
     deadone = tank.deathDetect(Tanks)
@@ -84,9 +149,10 @@ while mainRunning:
             ta.angle -= ta.movement[0]
             ta.x     -= ta.movement[1]
             ta.y     -= ta.movement[2]
+    ifHitWalls()
     
 
-
+    gridDraw()
     pygame.display.flip()
     pygame.time.Clock().tick(50)
  

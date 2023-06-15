@@ -6,9 +6,14 @@ import level
 import random
 from math import *
 from random import *
+import gui
 
 pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)
+
+
+
+
 
 mainRunning = True
 SCREEN_WIDTH = 1000
@@ -141,7 +146,7 @@ while mainRunning:
     # for map in level.map1:
     #     pygame.draw.rect(screen, (0,0,0), map)
 
-   
+
 
     # print(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot,"      ", keyArray[pygame.K_UP],keyArray[pygame.K_DOWN],keyArray[pygame.K_LEFT],keyArray[pygame.K_RIGHT], rightShoot)
     tankLeft.update(keyArray[pygame.K_w],keyArray[pygame.K_s],keyArray[pygame.K_a],keyArray[pygame.K_d],leftShoot) 
@@ -176,7 +181,7 @@ while mainRunning:
     gridDraw()
     pygame.display.flip()
     pygame.time.Clock().tick(50)
- 
+
 pygame.quit()
 quit()
 

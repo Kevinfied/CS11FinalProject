@@ -46,7 +46,7 @@ joystick.init()
 
 bulletLife = 6000 #bullet lives for 6000 miliseconds/6sec
 reloadPeriod = 5000 #reload time 
-loads = 50 # 5 shots per reload
+loads = 5 # 5 shots per reload
 margin = 50 # to account for the rough resolution of get_ticks()
 X = 0 
 Y = 1

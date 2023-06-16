@@ -187,6 +187,7 @@ def syncSettings(Tanks):
         ta.loads = bulletLoad
         ta.reloadPeriod = reloadPeriod
     tank.bulletLife = bulletLife
+
 def gameplay():
     global mode
     global leftScore, rightScore
@@ -212,7 +213,8 @@ def gameplay():
     if len(Tanks) == 3:
         dummy.update(0, 0, 0, 1, 0)
 
-
+    print(tankLeft.loads,  tank.reloadPeriod, )
+    
     deadone = tank.deathDetect(Tanks)
     if deadone:
         mixer.Sound.play(assets.deathExplosion)
@@ -246,6 +248,7 @@ def gameplay():
     tank.bulletVanish(Tanks)
     display.flip()
     time.Clock().tick(50)
+    
 def pausing():
     global mode
     for evt in event.get():
@@ -341,6 +344,7 @@ def mainMenu():
         if evt.type == MOUSEBUTTONDOWN:
             if play1Rect.collidepoint(mx, my):
                 leftScore = rightScore = 0
+                syncSettings(Tanks)
                 mode = 'game'
                 return
             elif play2Rect.collidepoint(mx, my):
@@ -486,6 +490,7 @@ def settingsScreen():
             if evt.key == K_ESCAPE:
                 # mainMenu()
                 settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
+                print('settings saved!')
                 mode = 'menu'
                 return
         if evt.type == MOUSEBUTTONDOWN:

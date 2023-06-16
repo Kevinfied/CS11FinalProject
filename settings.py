@@ -33,10 +33,10 @@ def saveDefaultSettings():
     settingsFile.close()
 
 
-print(getSettings())
-saveSettings(5, 4, 1000, 5000)
-print(getSettings())
-saveDefaultSettings()
-print(getSettings())
+# print(getSettings())
+# saveSettings(5, 4, 1000, 5000)
+# print(getSettings())
+# saveDefaultSettings()
+# print(getSettings())
 
 

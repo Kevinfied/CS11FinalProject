@@ -174,6 +174,7 @@ tanksReset()
 def gameplay():
     global paused
     global leftScore, rightScore
+    global mainRunning
     rightShoot,leftShoot = False, False
     for evt in event.get():
         if evt.type == QUIT:

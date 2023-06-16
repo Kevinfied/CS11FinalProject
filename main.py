@@ -6,7 +6,7 @@ import level
 import random
 from math import *
 from random import *
-import gui
+
 
 pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)

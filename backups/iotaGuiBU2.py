@@ -12,7 +12,7 @@ from random import *
 import settings
 
 SCREEN_WIDTH = 1000
-SCREEN_HEIGHT = 700 + 80
+SCREEN_HEIGHT = 700 + 30
 
 
 
@@ -58,7 +58,7 @@ def play():
     verticalLines   = []
     possibility = [ 0 for i in range(8)]+ [1]
     width = SCREEN_WIDTH//gridSize
-    height = gameScreenHeight//gridSize
+    height = SCREEN_HEIGHT//gridSize
     thickness = 10
     def gridGen():
         for y in range(height+1):
@@ -70,12 +70,12 @@ def play():
                     
                     if (x == 0 or x == width) and y != height:
                         verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1]) #1
-                    elif y != height:
-                        verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)]) #choi
                     else:
-                        verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 0])
+                        verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, choice(possibility)]) #choi
                 elif (x == 0 or x == width):
                     verticalLines[-1].append([x*gridSize, y*gridSize, x*gridSize, (y+1)*gridSize, 1]) #1
+                    
+                    
                     horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)]) #choi
                 else:
                     horizontalLines[-1].append([x*gridSize, y*gridSize, (x+1)*gridSize, y*gridSize, choice(possibility)])#choice(possibility)
@@ -160,9 +160,9 @@ def play():
         ta.x     -= ta.movement[1]
         ta.y     -= ta.movement[2]
 
-    tankLeft = tank.Tank(screen, assets.redBase, 200, gameScreenHeight/2, 0, RED, 1, 'player1')
-    tankRight = tank.Tank(screen, assets.blackBase, 800, gameScreenHeight/2, 0, BLACK, 1, 'player2')
-    dummy = tank.Tank(screen, assets.blueBase, 500, gameScreenHeight/2, 0, BLUE, 3, 'dummy')
+    tankLeft = tank.Tank(screen, assets.redBase, 200, SCREEN_HEIGHT/2, 0, RED, 1, 'player1')
+    tankRight = tank.Tank(screen, assets.blackBase, 800, SCREEN_HEIGHT/2, 0, BLACK, 1, 'player2')
+    dummy = tank.Tank(screen, assets.blueBase, 500, SCREEN_HEIGHT/2, 0, BLUE, 3, 'dummy')
     dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
     Tanks = [tankLeft, tankRight,dummy]
@@ -211,7 +211,7 @@ def play():
                     time.delay(100)
                     display.flip()
                 time.delay(3000)
-                
+                mainRunning = False
 
             
             ifHitWalls()

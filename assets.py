@@ -50,3 +50,8 @@ clashFontTitle = font.Font("assets/font/CR.ttf", 80)
 explosions = []
 for i in range(1,9):
     explosions.append(transform.scale(image.load("assets/explosion" + str(i) + ".png"), (100,100)))
+
+
+# Arrows
+arrowUp = image.load("assets/arrowUp.png")
+arrowDown = image.load("assets/arrowDown.png")

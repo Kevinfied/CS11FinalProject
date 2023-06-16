@@ -2,7 +2,6 @@ import pygame
 import assets
 import tank
 import os
-import level
 import random
 from math import *
 from random import *

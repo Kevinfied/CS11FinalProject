@@ -41,6 +41,7 @@ def play():
     BLACK = (0,0,0)
     BLUE = (0,0,255)
     GREY = (155,155,155)
+    WHITE = (255,255,255)
     screen = display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     display.set_caption("ICS3U FSE")
     display.set_icon(assets.blueBase)
@@ -61,6 +62,8 @@ def play():
     height = gameScreenHeight//gridSize
     thickness = 10
     def gridGen():
+        del horizontalLines[:]
+        del verticalLines[:]
         for y in range(height+1):
             horizontalLines.append([])
             verticalLines.append([])
@@ -100,7 +103,16 @@ def play():
         if min <= val and val <= ma:
             return True
         return False
-
+    def ifOutsideBox(xmin, xmax, ymin, ymax, points):
+        for point in points:
+            if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
+                return True
+        return False
+    def ifInsideBox(xmin, xmax, ymin, ymax, points):
+        for point in points:
+            if point[0]>= xmin and point[0] <= xmax and point[1] >= ymin and point[1] <= ymax:
+                return True
+        return False
     def ifHitWalls():
         for y in range(len(horizontalLines)):
             for x in range(len(horizontalLines[y])):
@@ -134,26 +146,15 @@ def play():
                                 
                                     shot[tank.VY] = -shot[tank.VY]
                                     tank.bounceSound('pong')
-                        
-                        if horizontalLines[y][x][4] and ifInsideBox(x1, x2, ycoord-thickness/2, ycoord+thickness/2, ta.basePoints):
+                        # pointinRect
+                        if horizontalLines[y][x][4] and (ifInsideBox(x1, x2, ycoord-thickness/2, ycoord+thickness/2, ta.basePoints) or ta.small_rect.colliderect((x1, ycoord-thickness/2, x2-x1, thickness))):
                                 print('touching')
-                                undoMotion(ta)
-                        if verticalLines[y][x][4] and ifInsideBox(xcoord-thickness/2, xcoord+thickness/2, y1, y2, ta.basePoints):
+                                undoMotion(ta) #no box points in the tank
+                        if verticalLines[y][x][4] and (ifInsideBox(xcoord-thickness/2, xcoord+thickness/2, y1, y2, ta.basePoints) or ta.small_rect.colliderect((xcoord-thickness/2, y1, thickness, y2-y1))):
                                 print('touching')
                                 undoMotion(ta)
 
-    def ifOutsideBox(xmin, xmax, ymin, ymax, points):
-        for point in points:
-            if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
-                return True
-                # if verticalLines[y][x][4:]:
-
-        return False
-    def ifInsideBox(xmin, xmax, ymin, ymax, points):
-        for point in points:
-            if point[0]>= xmin and point[0] <= xmax and point[1] >= ymin and point[1] <= ymax:
-                return True
-        return False
+    
 
     def undoMotion(ta):
         ta.angle -= ta.movement[0]
@@ -169,8 +170,25 @@ def play():
     del Tanks[2]
     # Tanks = [tank.tankLeft, tank.tankRight]
 
+    def tanksReset():
+    
+        for ta in Tanks:
+            ta.angle = random()*2*pi
+            ta.x = horizontalLines[randint(0,height-1)][randint(0,width-1)][0]+50
+            ta.y = horizontalLines[randint(0,height-1)][randint(0,width-1)][1]+50
+        
+    def drawScoreBoard(scorel, scorer):
+        rectLeft = Rect(0, gameScreenHeight, 100, 80)
+        rectRight = Rect(SCREEN_WIDTH-100, gameScreenHeight, 100, 80)
+        draw.rect(screen, RED, rectLeft)
+        draw.rect(screen, BLACK, rectRight)
+        lt = assets.clashFontM.render(str(scorel), True, WHITE )
+        rt = assets.clashFontM.render(str(scorer), True, WHITE )
+        screen.blit(lt, lt.get_rect(center = rectLeft.center) )
+        screen.blit(rt, rt.get_rect(center = rectRight.center) )
+    leftScore = rightScore = 0
     gridGen()
-
+    tanksReset()
     while mainRunning:
         if not paused:
             rightShoot,leftShoot = False, False
@@ -184,10 +202,8 @@ def play():
                         rightShoot = True
                     if evt.key == K_ESCAPE:
                         paused = True
-                if evt.type == MOUSEBUTTONDOWN:
-                    horizontalLines = []
-                    verticalLines   = []
-                    gridGen()
+                    if evt.key == K_BACKSLASH:
+                        gridGen()
 
             keyArray = key.get_pressed()
 
@@ -200,7 +216,9 @@ def play():
 
 
             deadone = tank.deathDetect(Tanks)
+
             if deadone:
+                
                 mixer.Sound.play(assets.deathExplosion)
                 _ = screen.copy()
                 for i in range(8):
@@ -210,12 +228,18 @@ def play():
                     screen.blit(assets.explosions[i], heherect)
                     time.delay(100)
                     display.flip()
-                time.delay(3000)
-                
+                # time.delay(3000)
+                if deadone == tankLeft:
+                    rightScore += 1
+                else:
+                    leftScore += 1
+                gridGen()
+                tanksReset()
 
             
             ifHitWalls()
             gridDraw()
+            drawScoreBoard(leftScore, rightScore)
             display.flip()
             time.Clock().tick(50)
         else:

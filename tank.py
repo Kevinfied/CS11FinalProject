@@ -95,13 +95,13 @@ class Tank:
         self.angVel = 2*pi/90
         self.mag = 8
 
-        self.bulletVel = 4
+        self.bulletVel = 9
         self.bulletRad = 5 * scale
         self.shots = []
         self.loads = loads
 
         self.tanks = []
-        self.reloadPeriod = reloadPeriod
+        self.reloadPeriod = reloadPeriod 
     def update(self,forward, back, left, right,shooting):
         
             
@@ -127,7 +127,8 @@ class Tank:
         rotated_image = transform.rotate(self.img, degrees(self.angle))
         rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y)
         bounding_rect = rotated_image.get_rect(center = rotatedCenter)
-
+        self.small_rect = bounding_rect.scale_by(0.5,0.5)
+        self.small_rect.center = (self.x, self.y)
 
         self.surf.blit(rotated_image, bounding_rect)
         self.basePoints = []
@@ -162,13 +163,13 @@ class Tank:
 
         for point in self.basePoints:
             draw.circle(self.surf, self.col, point, 3)
-        for point in self.fatPoints:
-            draw.circle(self.surf, self.col, point, 3)
+        # for point in self.fatPoints:
+            # draw.circle(self.surf, self.col, point, 3)
         
 
         draw.circle(self.surf, self.col, (self.x, self.y), 3)
         draw.circle(self.surf, self.col, rotatedCenter, 3) 
-        draw.rect(self.surf, self.col, bounding_rect, 2)
+        draw.rect(self.surf, self.col, self.small_rect, 2)
         
 
         if shooting and self.loads != 0:
@@ -206,6 +207,7 @@ def deathDetect(tanks):
                 for i in range(len(shooter.shots)):  
                     shot = shooter.shots[i]
                     if pointInRect(target.fatPoints, [shot[:2]]):
+                        del shooter.shots[i]
                         print(shooter.name + '  destroyed  ' + target.name)
                         return target
     

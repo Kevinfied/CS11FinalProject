@@ -14,7 +14,6 @@ pygame.init()
 
 
 
-
 mainRunning = True
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 700

@@ -180,6 +180,13 @@ def loadSettings():
     set = settings.getSettings()
     global winScore, bulletLoad, reloadPeriod, bulletLife
     winScore, bulletLoad, reloadPeriod, bulletLife = set[0], set[1], set[2], set[3]
+
+def syncSettings(Tanks):
+    global bulletLoad, reloadPeriod, bulletLife
+    for ta in Tanks:
+        ta.loads = bulletLoad
+        ta.reloadPeriod = reloadPeriod
+    tank.bulletLife = bulletLife
 def gameplay():
     global mode
     global leftScore, rightScore
@@ -473,7 +480,7 @@ def settingsScreen():
     mb = mouse.get_pressed()
     for evt in event.get():
         if evt.type == QUIT:
-            settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
+            # settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
             mode = 'quit'
         if evt.type == KEYDOWN:
             if evt.key == K_ESCAPE:

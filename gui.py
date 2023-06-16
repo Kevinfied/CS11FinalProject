@@ -176,7 +176,7 @@ def play():
             ta.angle = random()*2*pi
             ta.x = horizontalLines[randint(0,height-1)][randint(0,width-1)][0]+50
             ta.y = horizontalLines[randint(0,height-1)][randint(0,width-1)][1]+50
-        
+            ta.shots = []
     def drawScoreBoard(scorel, scorer):
         rectLeft = Rect(0, gameScreenHeight, 100, 80)
         rectRight = Rect(SCREEN_WIDTH-100, gameScreenHeight, 100, 80)
@@ -206,9 +206,7 @@ def play():
                         gridGen()
 
             keyArray = key.get_pressed()
-
             screen.fill(GREY)
-           
             tankLeft.update(keyArray[K_w],keyArray[K_s],keyArray[K_a],keyArray[K_d],leftShoot) 
             tankRight.update(keyArray[K_UP],keyArray[K_DOWN],keyArray[K_LEFT],keyArray[K_RIGHT], rightShoot)
             if len(Tanks) == 3:
@@ -240,6 +238,7 @@ def play():
             ifHitWalls()
             gridDraw()
             drawScoreBoard(leftScore, rightScore)
+            tank.bulletVanish(Tanks)
             display.flip()
             time.Clock().tick(50)
         else:

@@ -6,7 +6,7 @@ import level
 import random
 from math import *
 from random import *
-import gui
+# import gui
 
 pygame.init()
 # pygame.mixer.Sound(assets.deathExplosion)
@@ -27,22 +27,8 @@ screen = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
 pygame.display.set_caption("ICS3U FSE")
 pygame.display.set_icon(assets.blueBase)
 
-wallwidth = 20
-space = pygame.Rect(wallwidth,wallwidth,SCREEN_WIDTH-2*wallwidth, SCREEN_HEIGHT-2*wallwidth)
-xmin = wallwidth
-xmax = SCREEN_WIDTH- wallwidth
-ymin = wallwidth
-ymax = SCREEN_HEIGHT - wallwidth
 
-tankLeft = tank.Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 1, 'player1')
-tankRight = tank.Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 1, 'player2')
-dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 3, 'dummy')
-dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
 
-Tanks = [tankLeft, tankRight,dummy]
-del Tanks[2]
-# Tanks = [tank.tankLeft, tank.tankRight]
-lis = [0 for i in range(50)] + [1]
 
 
 
@@ -98,32 +84,65 @@ def within(min, val, ma):
 def ifHitWalls():
     for y in range(len(horizontalLines)):
         for x in range(len(horizontalLines[y])):
-            
-                for ta in Tanks:
+            for ta in Tanks:
+                if horizontalLines[y][x][4] or verticalLines[y][x][4]:
+                    
+                    x1 = horizontalLines[y][x][0]; x2 = horizontalLines[y][x][2]; ycoord = horizontalLines[y][x][1]
+                    xcoord = verticalLines[y][x][0]; y1 = verticalLines[y][x][1]; y2 = verticalLines[y][x][3]
                     for shot in ta.shots:
-                        if horizontalLines[y][x][4]:
-                            if within(horizontalLines[y][x][1] - thickness/2 - ta.bulletRad, shot[tank.Y] , horizontalLines[y][x][1] + thickness/2 + ta.bulletRad) and within(horizontalLines[y][x][0], shot[tank.X], horizontalLines[y][x][2]):
+                        
+                        if horizontalLines[y][x][4]:  
+                            if within(ycoord - thickness/2 - ta.bulletRad, shot[tank.Y] , ycoord + thickness/2 + ta.bulletRad) and within(x1, shot[tank.X], x2):
                                 shot[tank.VY] = -shot[tank.VY]
                                 tank.bounceSound('pong')
-                            elif within(horizontalLines[y][x][1] - thickness/2, shot[tank.Y], horizontalLines[y][x][1] + thickness/2) and within(horizontalLines[y][x][0] - ta.bulletRad, shot[tank.X], horizontalLines[y][x][0] + ta.bulletRad):
+                            elif within(ycoord - thickness/2, shot[tank.Y], ycoord + thickness/2) and within(x1 - ta.bulletRad, shot[tank.X], x2 + ta.bulletRad):
                                 shot[tank.VX] = -shot[tank.VX]
                                 tank.bounceSound('ping')
                             
                         if verticalLines[y][x][4]:
                             
-                            if within(verticalLines[y][x][0] - thickness/2 - ta.bulletRad, shot[tank.X], verticalLines[y][x][0] + thickness/2 + ta.bulletRad) and within(verticalLines[y][x][1], shot[tank.Y], verticalLines[y][x][3]):
+                            if within(xcoord - thickness/2 - ta.bulletRad, shot[tank.X], xcoord + thickness/2 + ta.bulletRad) and within(y1, shot[tank.Y], y2):
                                 shot[tank.VX] = -shot[tank.VX]
                                 tank.bounceSound('ping')
                         
-                            elif within(verticalLines[y][x][0] - thickness/2, shot[tank.X], verticalLines[y][x][0] + thickness/2) and within(verticalLines[y][x][1] - ta.bulletRad, shot[tank.Y], verticalLines[y][x][3] + ta.bulletRad):
+                            elif within(xcoord - thickness/2, shot[tank.X], xcoord + thickness/2) and within(y1 - ta.bulletRad, shot[tank.Y], y2 + ta.bulletRad):
                                 shot[tank.VY] = -shot[tank.VY]
                                 tank.bounceSound('pong')
-            # if verticalLines[y][x][4:]:
+                    
+                    if horizontalLines[y][x][4] and ifInsideBox(x1, x2, ycoord-thickness/2, ycoord+thickness/2, ta.basePoints):
+                            print('touching')
+                            undoMotion(ta)
+                    if verticalLines[y][x][4] and ifInsideBox(xcoord-thickness/2, xcoord+thickness/2, y1, y2, ta.basePoints):
+                            print('touching')
+                            undoMotion(ta)
 
+def ifOutsideBox(xmin, xmax, ymin, ymax, points):
+    for point in points:
+        if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
+            return True
+
+    return False
+def ifInsideBox(xmin, xmax, ymin, ymax, points):
+    for point in points:
+        if point[0]>= xmin and point[0] <= xmax and point[1] >= ymin and point[1] <= ymax:
+            return True
+    return False
+
+def undoMotion(ta):
+    ta.angle -= ta.movement[0]
+    ta.x     -= ta.movement[1]
+    ta.y     -= ta.movement[2]
+
+tankLeft = tank.Tank(screen, assets.redBase, 200, screen.get_height()/2, 0, RED, 1, 'player1')
+tankRight = tank.Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLACK, 1, 'player2')
+dummy = tank.Tank(screen, assets.blueBase, 500, screen.get_height()/2, 0, BLUE, 3, 'dummy')
+dummy.angVel = 2*pi/180; dummy.mag = 4; dummy.bulletVel = 8; dummy.reloadPeriod = 5000
+
+Tanks = [tankLeft, tankRight,dummy]
+del Tanks[2]
+# Tanks = [tank.tankLeft, tank.tankRight]
 
 gridGen()
-
-
 while mainRunning:
     rightShoot,leftShoot = False, False
     for evt in pygame.event.get():
@@ -170,17 +189,19 @@ while mainRunning:
         pygame.time.delay(3000)
         mainRunning = False
 
-    for ta in Tanks:
-        if tank.touchingWalls(xmin,xmax, ymin, ymax, ta.basePoints):
-            ta.angle -= ta.movement[0]
-            ta.x     -= ta.movement[1]
-            ta.y     -= ta.movement[2]
+    # for ta in Tanks:
+    #     if tank.touchingWalls(xmin,xmax, ymin, ymax, ta.basePoints):
+    #         # ta.angle -= ta.movement[0]
+    #         # ta.x     -= ta.movement[1]
+    #         # ta.y     -= ta.movement[2]
+    #         undoMotion(ta)
     ifHitWalls()
     
 
     gridDraw()
     pygame.display.flip()
     pygame.time.Clock().tick(50)
+    # print('fdslkjfdslkjdfsa')
 
 pygame.quit()
 quit()

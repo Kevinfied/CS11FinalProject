@@ -10,7 +10,7 @@ from math import *
 from random import *
 
 import settings
-
+init()
 SCREEN_WIDTH = 1000
 SCREEN_HEIGHT = 700 + 80
 
@@ -18,7 +18,7 @@ SCREEN_HEIGHT = 700 + 80
 mainRunning = True
 
 
-paused = False
+mode = 'menu'
 
 RED = (255,0,0)
 GREEN = (0,255,0)
@@ -40,6 +40,9 @@ possibility = [ 0 for i in range(8)]+ [1]
 width = SCREEN_WIDTH//gridSize
 height = gameScreenHeight//gridSize
 thickness = 10
+
+leftScore = rightScore = 0
+
 def gridGen():
     del horizontalLines[:]
     del verticalLines[:]
@@ -166,26 +169,28 @@ def drawScoreBoard(scorel, scorer):
     screen.blit(lt, lt.get_rect(center = rectLeft.center) )
     screen.blit(rt, rt.get_rect(center = rectRight.center) )
 
-leftScore = rightScore = 0
-gridGen()
-tanksReset()
-
+# Settings
+set = settings.getSettings()
+winScore = set[0]
+bulletLoad = set[1]
+reloadPeriod = (set[2]) * 100
+bulletLife = (set[3]) * 1000
 
 def gameplay():
-    global paused
+    global mode
     global leftScore, rightScore
-    global mainRunning
+    global winner
     rightShoot,leftShoot = False, False
     for evt in event.get():
         if evt.type == QUIT:
-            mainRunning = False
+            mode = 'quit'
         if evt.type == KEYDOWN:
             if evt.key == K_c:
                 leftShoot = True
             if evt.key == K_SLASH:
                 rightShoot = True
             if evt.key == K_ESCAPE:
-                paused = True
+                mode = 'pause'
             if evt.key == K_BACKSLASH:
                 gridGen()
 
@@ -213,6 +218,13 @@ def gameplay():
             rightScore += 1
         else:
             leftScore += 1
+
+        if rightScore == winScore:
+            winner = "PLAYER 2"
+            mode = 'end'
+        elif leftScore == winScore:
+            winner = "PLAYER 1"
+            mode = 'end'
         gridGen()
         tanksReset()
 
@@ -224,13 +236,16 @@ def gameplay():
     display.flip()
     time.Clock().tick(50)
 def pausing():
-    global paused
+    global mode
     for evt in event.get():
         if evt.type == QUIT:
-            quit()
+            mode = 'quit'
         if evt.type == KEYDOWN:
             if evt.key == K_ESCAPE:
-                paused = False
+                mode = 'game'
+            if evt.key == K_m:
+                mode = 'menu'
+
 
     pauseText = assets.clashFontL.render("Paused", True, RED)
     toMainText = assets.clashFontS.render("press M for main menu", True, WHITE)
@@ -243,7 +258,7 @@ def pausing():
 # def setting():
 # def instruction():
 
-def play():
+# def play():
     # def pauseMenu():
     #     pause = True
     #     while pause:
@@ -261,11 +276,8 @@ def play():
 
     
 
-    while mainRunning:
-        if not paused:
-            gameplay()
-        else:
-            pausing()
+
+        
 
 
     
@@ -303,149 +315,238 @@ def play():
 
 
 def mainMenu():
-    init()
-    mainMenuClock = time.Clock()
-    mainScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    running = True
-    rects = [Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100), Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4) * 3, 400, 100)]
+    global mode
+    global leftScore, rightScore
+    
+    # mainMenuClock = time.Clock()
+    # screen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # running = True
+
     play1Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100)
     play2Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4) * 3, 400, 100)
-    button1Hover = False
-    button2Hover = False
-    while running:
-        for evt in event.get():
-            if evt.type == QUIT:
-                quit()
-            if evt.type == MOUSEBUTTONDOWN:
-                if play1Rect.collidepoint(mx, my):
-                    play()
-                    return
-                elif play2Rect.collidepoint(mx, my):
-                    settingsScreen()
-                    return
-        mx, my = mouse.get_pos()
-        mb = mouse.get_pressed()
 
-
-        mainScreen.fill((255, 255, 255))
-
-        titleTxt = assets.clashFontTitle.render("Tank Trouble", True, (0, 0, 0))
-        titleRect = titleTxt.get_rect()
-        titleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
-        mainScreen.blit(titleTxt, (titleRect))
-
-        play1txt = assets.clashFontL.render("Play", True, (0, 0, 0))
-        play1txtRect = play1txt.get_rect()
-        play1txtRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4 * 3 )-150) + (100/2))
-        settingstxt = assets.clashFontL.render("Settings", True, (0, 0, 0))
-        settingstxtRect = settingstxt.get_rect()
-        settingstxtRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
-
-        draw.rect(mainScreen, (0, 0, 255), play1Rect, 50, 10)
-        mainScreen.blit(play1txt, (play1txtRect))
-        draw.rect(mainScreen, (0, 0,255), play2Rect, 50, 10)
-        mainScreen.blit(settingstxt, (settingstxtRect))
-        if play1Rect.collidepoint(mx, my):
-            if mb[0] == 0:
-                play1txtL = assets.clashFontXL.render("Play", True, (0, 0, 0))
-                play1txtLRect = play1txtL.get_rect()
-                play1txtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4 * 3 )-150) + (100/2))
-                button1Hover = True
-                buttonH1 = Rect(SCREEN_WIDTH/2-210, (SCREEN_HEIGHT/4 * 3 )-160, 420, 120)
-                draw.rect(mainScreen, (0, 0, 255), buttonH1, 60, 10)
-                mainScreen.blit(play1txtL, (play1txtLRect))
-                # hoverButton(mainScreen, play1Rect, mx, my)
-        
-        if play2Rect.collidepoint(mx, my):
-            if mb[0] == 0:
-                # play2txtL = assets.clashFontXL.render("Play", True, (0, 0, 0))
-                # play2txtLRect = play2txtL.get_rect()
-                # play2txtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
-                settingstxtL = assets.clashFontXL.render("Settings", True, (0, 0, 0))
-                settingstxtLRect = settingstxtL.get_rect()
-                settingstxtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
-                button2Hover = True
-                buttonH2 = Rect(SCREEN_WIDTH/2-210, (SCREEN_HEIGHT/4) * 3 - 10, 420, 120)
-                draw.rect(mainScreen, (0, 0, 255), buttonH2, 60, 10)
-                mainScreen.blit(settingstxtL, (settingstxtLRect))
-                
-                # mainScreen.blit(play2txtL, (play2txtLRect))
-                # hoverButton(mainScreen, play2Rect, mx, my)
-        
-        # if play1Rect.collidepoint(mx, my):
-        #     if mb[0] == 0:
-        #         button1Hover = True
-        #         buttonH1 = hoverButton(play1Rect)
-        #         draw.rect(mainScreen, (0, 0, 255), buttonH1, 200, 20)
-        #         # hoverButton(mainScreen, play1Rect, mx, my)
-        # elif play2Rect.collidepoint(mx, my):
-        #     if mb[0] == 0:
-        #         hoverButton(mainScreen, play2Rect, mx, my)
-
-        # if button1Hover == False:
-
+    # while running:
+    mx, my = mouse.get_pos()
+    mb = mouse.get_pressed()
+    for evt in event.get():
+        if evt.type == QUIT:
+            mode = 'quit'
+        if evt.type == MOUSEBUTTONDOWN:
+            if play1Rect.collidepoint(mx, my):
+                leftScore = rightScore = 0
+                mode = 'game'
+                return
+            elif play2Rect.collidepoint(mx, my):
+                # settingsScreen()
+                mode = 'setting'
+                return
     
-        "USE time.wait() for the button hover effect so it doesnt change the tick speed"
-
-        # mainMenuClock.tick(60)
-        display.flip()
-        
-    return
 
 
+    screen.fill((255, 255, 255))
 
+    titleTxt = assets.clashFontTitle.render("Tank Trouble", True, (0, 0, 0))
+    titleRect = titleTxt.get_rect()
+    titleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
+    screen.blit(titleTxt, (titleRect))
 
+    play1txt = assets.clashFontL.render("Play", True, (0, 0, 0))
+    play1txtRect = play1txt.get_rect()
+    play1txtRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4 * 3 )-150) + (100/2))
+    settingstxt = assets.clashFontL.render("Settings", True, (0, 0, 0))
+    settingstxtRect = settingstxt.get_rect()
+    settingstxtRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
 
-
-
-def gameOverScreen(winner):
+    draw.rect(screen, (0, 0, 255), play1Rect, 50, 10)
+    screen.blit(play1txt, (play1txtRect))
+    draw.rect(screen, (0, 0,255), play2Rect, 50, 10)
+    screen.blit(settingstxt, (settingstxtRect))
+    if play1Rect.collidepoint(mx, my):
+        if mb[0] == 0:
+            play1txtL = assets.clashFontXL.render("Play", True, (0, 0, 0))
+            play1txtLRect = play1txtL.get_rect()
+            play1txtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4 * 3 )-150) + (100/2))
+            button1Hover = True
+            buttonH1 = Rect(SCREEN_WIDTH/2-210, (SCREEN_HEIGHT/4 * 3 )-160, 420, 120)
+            draw.rect(screen, (0, 0, 255), buttonH1, 60, 10)
+            screen.blit(play1txtL, (play1txtLRect))
+            # hoverButton(screen, play1Rect, mx, my)
     
-    return
+    if play2Rect.collidepoint(mx, my):
+        if mb[0] == 0:
+            # play2txtL = assets.clashFontXL.render("Play", True, (0, 0, 0))
+            # play2txtLRect = play2txtL.get_rect()
+            # play2txtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
+            settingstxtL = assets.clashFontXL.render("Settings", True, (0, 0, 0))
+            settingstxtLRect = settingstxtL.get_rect()
+            settingstxtLRect.center = ((SCREEN_WIDTH/2-200) + (400/2), ((SCREEN_HEIGHT/4) * 3) + (100/2))
+            button2Hover = True
+            buttonH2 = Rect(SCREEN_WIDTH/2-210, (SCREEN_HEIGHT/4) * 3 - 10, 420, 120)
+            draw.rect(screen, (0, 0, 255), buttonH2, 60, 10)
+            screen.blit(settingstxtL, (settingstxtLRect))
+            
+            # screen.blit(play2txtL, (play2txtLRect))
+            # hoverButton(screen, play2Rect, mx, my)
+    
+    # if play1Rect.collidepoint(mx, my):
+    #     if mb[0] == 0:
+    #         button1Hover = True
+    #         buttonH1 = hoverButton(play1Rect)
+    #         draw.rect(screen, (0, 0, 255), buttonH1, 200, 20)
+    #         # hoverButton(screen, play1Rect, mx, my)
+    # elif play2Rect.collidepoint(mx, my):
+    #     if mb[0] == 0:
+    #         hoverButton(screen, play2Rect, mx, my)
+
+    # if button1Hover == False:
+
+
+    "USE time.wait() for the button hover effect so it doesnt change the tick speed"
+
+    # mainMenuClock.tick(60)
+    display.flip()
+        
+    # return
+
+
+
+
+
+
 
 def settingsScreen():
-    settingsScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    settingsTitle = assets.clashFontXL.render("Settings", True, (0, 0, 0))
+    global mode
+    global winScore
+    global bulletLoad
+    global reloadPeriod
+    global bulletLife
+    background = transform.scale(assets.settingsBg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+    # settingsScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    settingsTitle = assets.clashFontXL.render("SETTINGS" , True, (0, 0, 0))
     settingsTitleRect = settingsTitle.get_rect()
-    settingsTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/4)
-    changingSettings = True
-    while changingSettings:
-        for evt in event.get():
-            if evt.type == QUIT:
-                quit()
-            if evt.type == KEYDOWN:
-                if evt.key == K_ESCAPE:
-                    mainMenu()
-                    settings.saveSettings()
-                    return
-        settingsScreen.fill((255, 255, 255))
-        settingsScreen.blit(settingsTitle, (settingsTitleRect))
+    settingsTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/8)
+    winScoreTxt = assets.clashFontL.render("Win Score", True, (0, 0, 0))
+    winScoreTxtRect = winScoreTxt.get_rect()
+    winScoreTxtRect.center = (SCREEN_WIDTH/4, SCREEN_HEIGHT/4)
+    tankLoadTxt = assets.clashFontL.render("Tank Load", True, (0, 0, 0))
+    tankLoadTxtRect = tankLoadTxt.get_rect()
+    tankLoadTxtRect.center = (SCREEN_WIDTH/4, SCREEN_HEIGHT/4 + 100)
+    reloadPeriodTxt = assets.clashFontL.render("Reload Period", True, (0, 0, 0))
+    reloadPeriodTxtRect = reloadPeriodTxt.get_rect()
+    reloadPeriodTxtRect.center = (SCREEN_WIDTH/4, SCREEN_HEIGHT/4 + 200)
+    bulletLifeTxt = assets.clashFontL.render("Bullet Life", True, (0, 0, 0))
+    bulletLifeTxtRect = bulletLifeTxt.get_rect()
+    bulletLifeTxtRect.center = (SCREEN_WIDTH/4, SCREEN_HEIGHT/4 + 300)
 
-        
-        display.flip()
+    increaseButton = transform.scale(assets.arrowRight, (50, 50))
+    decreaseButton = transform.scale(assets.arrowLeft, (50, 50))
+
+    winScoreUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 - 25, 50, 50)
+    winScoreDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 - 25, 50, 50)
+    tankLoadUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 + 75, 50, 50)
+    tankLoadDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 + 75, 50, 50)
+    reloadPeriodUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 + 175, 50, 50)
+    reloadPeriodDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 + 175, 50, 50)
+    bulletLifeUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 + 275, 50, 50)
+    bulletLifeDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 + 275, 50, 50)
+
+    winScoreVal = assets.clashFontL.render(str(winScore), True, (0, 0, 0))
+    winScoreValRect = winScoreVal.get_rect()
+    winScoreValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4)
+    tankLoadVal = assets.clashFontL.render(str(bulletLoad), True, (0, 0, 0))
+    tankLoadValRect = tankLoadVal.get_rect()
+    tankLoadValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 100)
+    reloadPeriodVal = assets.clashFontL.render(str(reloadPeriod), True, (0, 0, 0))
+    reloadPeriodValRect = reloadPeriodVal.get_rect()
+    reloadPeriodValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 200)
+    bulletLifeVal = assets.clashFontL.render(str(bulletLife), True, (0, 0, 0))
+    bulletLifeValRect = bulletLifeVal.get_rect()
+    bulletLifeValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 300)
+    # changingSettings = True
+    # while changingSettings:
+    for evt in event.get():
+        if evt.type == QUIT:
+            mode = 'quit'
+        if evt.type == KEYDOWN:
+            if evt.key == K_ESCAPE:
+                # mainMenu()
+                settings.saveSettings()
+                mode = 'menu'
+                return
+        if evt.type == MOUSEBUTTONDOWN:
+            if evt.button == 1:
+                if winScoreUp.collidepoint(mx, my):
+                    winScore += 1
+                if winScoreDown.collidepoint(mx, my):
+                    winScore -= 1
+                if tankLoadUp.collidepoint(mx, my):
+                    bulletLoad += 1
+                if tankLoadDown.collidepoint(mx, my):
+                    bulletLoad -= 1
+                if reloadPeriodUp.collidepoint(mx, my):
+                    reloadPeriod += 1
+                if reloadPeriodDown.collidepoint(mx, my):
+                    reloadPeriod -= 1
+                if bulletLifeUp.collidepoint(mx, my):
+                    bulletLife += 1
+                if bulletLifeDown.collidepoint(mx, my):
+                    bulletLife -= 1     
+    mx, my = mouse.get_pos()
+    mb = mouse.get_pressed()
+    screen.blit(background, (0,0))
+    screen.blit(settingsTitle, (settingsTitleRect))
+    screen.blit(winScoreTxt, (winScoreTxtRect))
+    screen.blit(tankLoadTxt, (tankLoadTxtRect))
+    screen.blit(reloadPeriodTxt, (reloadPeriodTxtRect))
+    screen.blit(bulletLifeTxt, (bulletLifeTxtRect))
+    screen.blit(increaseButton, (winScoreUp))
+    screen.blit(decreaseButton, (winScoreDown))
+    screen.blit(increaseButton, (tankLoadUp))
+    screen.blit(decreaseButton, (tankLoadDown))
+    screen.blit(increaseButton, (reloadPeriodUp))
+    screen.blit(decreaseButton, (reloadPeriodDown))
+    screen.blit(increaseButton, (bulletLifeUp))
+    screen.blit(decreaseButton, (bulletLifeDown))
+    
+    screen.blit(winScoreVal, (winScoreValRect))
+    screen.blit(tankLoadVal, (tankLoadValRect))
+    screen.blit(reloadPeriodVal, (reloadPeriodValRect))
+    screen.blit(bulletLifeVal, (bulletLifeValRect))
+    
+    
+
+    
+    display.flip()
 
 
     # Save settings in file i/o
-    return
+    # return
 
 
 def instructionsScreen():
     return
 
-def gameOverScreen():
-    gameOver = True
-    gameOverScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    while gameOver:
-        for evt in event.get():
-            if evt.type == QUIT:
-                quit()
-            if evt.type == KEYDOWN:
-                if evt.key == K_ESCAPE:
-                    mainMenu()
-                    return
-        gameOverScreen.fill((255, 255, 255))
+def gameOverScreen(winner):
+    global mode
 
-        
-        display.flip()
+    # gameOver = True
+
+    gameOverTitle = assets.clashFontXL.render(winner + " WINS", True, (255, 0, 0))
+    gameOverTitleRect = gameOverTitle.get_rect()
+    gameOverTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
+    # while gameOver:
+    for evt in event.get():
+        if evt.type == QUIT:
+            mode = 'quit'
+        if evt.type == KEYDOWN:
+            if evt.key == K_ESCAPE:
+                mode = 'menu'
+                # mainMenu()
+                return
+
+    screen.blit(gameOverTitle, (gameOverTitleRect))
+
+    display.flip()
     
 
 
@@ -455,7 +556,25 @@ def gameOverScreen():
 
 
 
-mainMenu()
+# mainMenu()
+
+
+gridGen()
+tanksReset()
+while mainRunning:
+    if mode == 'menu':
+        mainMenu()
+    elif mode == 'game':
+        gameplay()
+    elif mode == 'pause':
+        pausing()
+    elif mode == 'setting':
+        settingsScreen()
+    elif mode == "end":
+        gameOverScreen(winner)
+    elif mode == 'quit':
+        mainRunning = False
+quit()
 
 
 

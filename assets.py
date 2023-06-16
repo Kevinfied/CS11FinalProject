@@ -53,5 +53,9 @@ for i in range(1,9):
 
 
 # Arrows
-arrowUp = image.load("assets/arrowUp.png")
-arrowDown = image.load("assets/arrowDown.png")
+arrowLeft = image.load("assets/arrowLeft.png")
+arrowRight = image.load("assets/arrowRight.png")
+
+#Settings Background
+
+settingsBg = image.load("assets/settingBKG.png")

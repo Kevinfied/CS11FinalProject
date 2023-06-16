@@ -1,5 +1,5 @@
-defaultSettings = ["Win Score", 5, "Bullet Load", 5, "Reload Period", 5, "Bullet Life", 6]
-settingsFile = open("settings.txt", "r")
+# defaultSettings = ["Win Score", 5, "Bullet Load", 5, "Reload Period", 5, "Bullet Life", 6]
+# settingsFile = open("settings.txt", "r")
 
 settings = []
 
@@ -24,15 +24,19 @@ def saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife):
     settingsFile.close()
 
 def saveDefaultSettings():
-    defaultSettings = ["Win Score", 5, "Bullet Load", 5, "Reload Period", 5, "Bullet Life", 6]
+    defaultSettings = ["Win Score", 5, "Bullet Load", 5, "Reload Period", 5000, "Bullet Life", 6000]
     settingsFile = open("settings.txt", "w")
     for i in range(len(defaultSettings)):
-        if (i + 1) % 2 == 0:
+        if i % 2 == 1:
             settingsFile.write(str(defaultSettings[i]) + "\n")
         # settingsFile.write(str(defaultSettings[i][1]) + "\n")
     settingsFile.close()
 
 
+print(getSettings())
+saveSettings(5, 4, 1000, 5000)
+print(getSettings())
+saveDefaultSettings()
 print(getSettings())
 
 

@@ -170,12 +170,16 @@ def drawScoreBoard(scorel, scorer):
     screen.blit(rt, rt.get_rect(center = rectRight.center) )
 
 # Settings
-set = settings.getSettings()
-winScore = set[0]
-bulletLoad = set[1]
-reloadPeriod = (set[2]) * 100
-bulletLife = (set[3]) * 1000
 
+winScore=0
+bulletLoad=0
+reloadPeriod=0
+bulletLife=0
+
+def loadSettings():
+    set = settings.getSettings()
+    global winScore, bulletLoad, reloadPeriod, bulletLife
+    winScore, bulletLoad, reloadPeriod, bulletLife = set[0], set[1], set[2], set[3]
 def gameplay():
     global mode
     global leftScore, rightScore
@@ -317,10 +321,6 @@ def pausing():
 def mainMenu():
     global mode
     global leftScore, rightScore
-    
-    # mainMenuClock = time.Clock()
-    # screen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    # running = True
 
     play1Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4 * 3 )-150, 400, 100)
     play2Rect = Rect(SCREEN_WIDTH/2-200, (SCREEN_HEIGHT/4) * 3, 400, 100)
@@ -339,6 +339,7 @@ def mainMenu():
             elif play2Rect.collidepoint(mx, my):
                 # settingsScreen()
                 mode = 'setting'
+                loadSettings()
                 return
     
 
@@ -464,35 +465,78 @@ def settingsScreen():
     bulletLifeValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 300)
     # changingSettings = True
     # while changingSettings:
+    resetRect = Rect(20,20,100,40)
+    defaultTxt = assets.clashFontS.render('Default', True, WHITE)
+    
+    bounds = [[0,100],[1,10],[0,10000],[1000,10000]]
+    mx, my = mouse.get_pos()
+    mb = mouse.get_pressed()
     for evt in event.get():
         if evt.type == QUIT:
+            settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
             mode = 'quit'
         if evt.type == KEYDOWN:
             if evt.key == K_ESCAPE:
                 # mainMenu()
-                settings.saveSettings()
+                settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
                 mode = 'menu'
                 return
         if evt.type == MOUSEBUTTONDOWN:
             if evt.button == 1:
                 if winScoreUp.collidepoint(mx, my):
-                    winScore += 1
+                    if winScore+1 <= bounds[0][1]:
+                        winScore += 1
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if winScoreDown.collidepoint(mx, my):
-                    winScore -= 1
+                    if winScore-1 >= bounds[0][0]:
+                        winScore -= 1
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if tankLoadUp.collidepoint(mx, my):
-                    bulletLoad += 1
+                    if bulletLoad+1 <= bounds[1][1]:
+                        bulletLoad += 1
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if tankLoadDown.collidepoint(mx, my):
-                    bulletLoad -= 1
+                    if bulletLoad-1 >= bounds[1][0]:
+                        bulletLoad -= 1
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if reloadPeriodUp.collidepoint(mx, my):
-                    reloadPeriod += 1
+                    if reloadPeriod+500 <= bounds[2][1]:
+                        reloadPeriod += 500
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if reloadPeriodDown.collidepoint(mx, my):
-                    reloadPeriod -= 1
+                    if reloadPeriod-500 >= bounds[2][0]:
+                        reloadPeriod -= 500
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if bulletLifeUp.collidepoint(mx, my):
-                    bulletLife += 1
+                    if  bulletLife+1000 <= bounds[3][1]:
+                        bulletLife += 1000
+                        mixer.Sound.play(assets.pop)
+                    else:
+                        mixer.Sound.play(assets.pong)
                 if bulletLifeDown.collidepoint(mx, my):
-                    bulletLife -= 1     
-    mx, my = mouse.get_pos()
-    mb = mouse.get_pressed()
+                    if bulletLife-1000 >= bounds[3][0]:
+                        bulletLife -= 1000  
+                        mixer.Sound.play(assets.pop)  
+                    else:
+                        mixer.Sound.play(assets.pong)
+                if resetRect.collidepoint(mx,my):
+                    settings.saveDefaultSettings()
+                    loadSettings()
+                    mixer.Sound.play(assets.pop)
+
+                    
     screen.blit(background, (0,0))
     screen.blit(settingsTitle, (settingsTitleRect))
     screen.blit(winScoreTxt, (winScoreTxtRect))
@@ -508,12 +552,14 @@ def settingsScreen():
     screen.blit(increaseButton, (bulletLifeUp))
     screen.blit(decreaseButton, (bulletLifeDown))
     
+
     screen.blit(winScoreVal, (winScoreValRect))
     screen.blit(tankLoadVal, (tankLoadValRect))
     screen.blit(reloadPeriodVal, (reloadPeriodValRect))
     screen.blit(bulletLifeVal, (bulletLifeValRect))
     
-    
+    draw.rect(screen, BLACK, resetRect, False, 9)
+    screen.blit(defaultTxt, defaultTxt.get_rect(center = resetRect.center))
 
     
     display.flip()

@@ -189,16 +189,11 @@ class Tank:
             #     mixer.Sound.play(assets.pong)
             shot[X] += shot[VX]
             shot[Y] += shot[VY]
-        for i in range(len(self.shots)):  
-            shot = self.shots[i]
-            if time.get_ticks() - shot[TIME] >= bulletLife:
-                del self.shots[i]
-                mixer.Sound.play(assets.shotVanish)
-                break
-            if 0 <= shot[X] <= self.surf.get_width() and 0 <= shot[Y] <= self.surf.get_height():
-                draw.circle(self.surf, self.col, shot[:2], self.bulletRad)
         
-                    
+        
+        
+        
+
 
 def deathDetect(tanks):
     for shooter in tanks:
@@ -211,7 +206,16 @@ def deathDetect(tanks):
                         print(shooter.name + '  destroyed  ' + target.name)
                         return target
     
-
+def bulletVanish(tanks):
+    for ta in tanks:
+        for i in range(len(ta.shots)):  
+                shot = ta.shots[i]
+                if time.get_ticks() - shot[TIME] >= bulletLife:
+                    del ta.shots[i]
+                    mixer.Sound.play(assets.shotVanish)
+                    break
+                if 0 <= shot[X] <= ta.surf.get_width() and 0 <= shot[Y] <= ta.surf.get_height():
+                    draw.circle(ta.surf, ta.col, shot[:2], ta.bulletRad)
 # changed from 5 to 3 and the circle is now in the wrong position. 
 
                 

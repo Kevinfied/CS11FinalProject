@@ -159,7 +159,7 @@ def tanksReset():
         ta.x = horizontalLines[randint(0,height-1)][randint(0,width-1)][0]+50
         ta.y = horizontalLines[randint(0,height-1)][randint(0,width-1)][1]+50
         ta.shots = []
-def drawScoreBoard(scorel, scorer):
+def drawScoreBoard(scorel, scorer, winScore):
     rectLeft = Rect(0, gameScreenHeight, 100, 80)
     rectRight = Rect(SCREEN_WIDTH-100, gameScreenHeight, 100, 80)
     draw.rect(screen, RED, rectLeft)
@@ -168,6 +168,13 @@ def drawScoreBoard(scorel, scorer):
     rt = assets.clashFontM.render(str(scorer), True, WHITE )
     screen.blit(lt, lt.get_rect(center = rectLeft.center) )
     screen.blit(rt, rt.get_rect(center = rectRight.center) )
+    if winScore != 0:
+        ct = assets.clashFontL.render('First to '+str(winScore), True, BLACK)
+    else:
+        ct = assets.clashFontL.render('Infinite Mode', True, BLACK)
+    screen.blit(ct, ct.get_rect(center = (SCREEN_WIDTH/2, gameScreenHeight + 40)))
+    
+
 
 # Settings
 
@@ -176,16 +183,17 @@ bulletLoad=0
 reloadPeriod=0
 bulletLife=0
 
+
 def loadSettings():
     set = settings.getSettings()
     global winScore, bulletLoad, reloadPeriod, bulletLife
     winScore, bulletLoad, reloadPeriod, bulletLife = set[0], set[1], set[2], set[3]
 
-def syncSettings(Tanks):
+def syncSettings():
     global bulletLoad, reloadPeriod, bulletLife
-    for ta in Tanks:
-        ta.loads = bulletLoad
-        ta.reloadPeriod = reloadPeriod
+    loadSettings()
+    tank.loads = bulletLoad
+    tank.reloadPeriod = reloadPeriod
     tank.bulletLife = bulletLife
 
 def gameplay():
@@ -213,7 +221,7 @@ def gameplay():
     if len(Tanks) == 3:
         dummy.update(0, 0, 0, 1, 0)
 
-    print(tankLeft.loads,  tank.reloadPeriod, )
+    # print(tank.loads,  tank.reloadPeriod, tank.bulletLife)
     
     deadone = tank.deathDetect(Tanks)
     if deadone:
@@ -231,20 +239,20 @@ def gameplay():
             rightScore += 1
         else:
             leftScore += 1
-
-        if rightScore == winScore:
-            winner = "PLAYER 2"
-            mode = 'end'
-        elif leftScore == winScore:
-            winner = "PLAYER 1"
-            mode = 'end'
+        if winScore != 0:
+            if rightScore == winScore:
+                winner = "PLAYER 2"
+                mode = 'end'
+            elif leftScore == winScore:
+                winner = "PLAYER 1"
+                mode = 'end'
         gridGen()
         tanksReset()
 
     
     ifHitWalls()
     gridDraw()
-    drawScoreBoard(leftScore, rightScore)
+    drawScoreBoard(leftScore, rightScore,winScore)
     tank.bulletVanish(Tanks)
     display.flip()
     time.Clock().tick(50)
@@ -344,11 +352,13 @@ def mainMenu():
         if evt.type == MOUSEBUTTONDOWN:
             if play1Rect.collidepoint(mx, my):
                 leftScore = rightScore = 0
-                syncSettings(Tanks)
+                syncSettings()
+                mixer.Sound.play(assets.pop)
                 mode = 'game'
                 return
             elif play2Rect.collidepoint(mx, my):
                 # settingsScreen()
+                mixer.Sound.play(assets.pop)
                 mode = 'setting'
                 loadSettings()
                 return
@@ -479,7 +489,7 @@ def settingsScreen():
     resetRect = Rect(20,20,100,40)
     defaultTxt = assets.clashFontS.render('Default', True, WHITE)
     
-    bounds = [[0,100],[1,10],[0,10000],[1000,10000]]
+    bounds = [[0,100],[1,10],[500,10000],[1000,10000]]
     mx, my = mouse.get_pos()
     mb = mouse.get_pressed()
     for evt in event.get():
@@ -490,7 +500,7 @@ def settingsScreen():
             if evt.key == K_ESCAPE:
                 # mainMenu()
                 settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
-                print('settings saved!')
+               
                 mode = 'menu'
                 return
         if evt.type == MOUSEBUTTONDOWN:
@@ -588,8 +598,10 @@ def gameOverScreen(winner):
     global mode
 
     # gameOver = True
-
-    gameOverTitle = assets.clashFontXL.render(winner + " WINS", True, (255, 0, 0))
+    if winner == 'PLAYER 2':
+        gameOverTitle = assets.clashFontXL.render(winner + " WINS", True, BLACK)
+    else:
+        gameOverTitle = assets.clashFontXL.render(winner + " WINS", True, (255, 0, 0))
     gameOverTitleRect = gameOverTitle.get_rect()
     gameOverTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/2)
     # while gameOver:

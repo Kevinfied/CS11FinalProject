@@ -1,6 +1,18 @@
+'''
+tank.py
+Raymond Wu and Kevin Xu
+
+This file contains the class Tank, the only class in this game
+Tank class stores the attibutes of each tank character, including things like
+tank speed, bullet speed, size, reload time, and number of shots in each load
+This file also contains several functions for the class to run and for utility. 
+'''
+
+
 from pygame import *
 from math import *
 import assets
+# assets.py is the file that contains all pictures and sound effects
 
 init()
 RED = (255,0,0)
@@ -11,14 +23,13 @@ BLUE = (0,0,255)
 def shoelace(points):
     downsum, upsum = 0,0
     points.append(points[0])
-    
-    
     for i in range(len(points)-1):
         downsum += points[i][0] * points[i+1][1]
         upsum   += points[i+1][0] * points[i][1]
     return 0.5*abs(downsum-upsum)
-
-
+#shoelace is a function that returns the area of a shape given its points in a list format. 
+# as the name suggests, it uses the shoelace formula 
+# this function is used in pointInRect, the function below for tank death detection
 
 
 def pointInRect(points, point):
@@ -32,15 +43,12 @@ def pointInRect(points, point):
     else:
         return False
 
-# print(pointInRect(points, [[4,4]]))
-# print(points[0:2]+point, points[1:3]+point, points[2:], points[3]+points[0]+point)
-
-
-
-
-
-joystick.init()
-# joysticks = [joystick.Joystick(x) for x in range(joystick.get_count())]
+# this function requires a list of points for a non-ortho rectangle (not straight, rotated) and a point. 
+# its job is to detect if the point is inside the rectangle
+# it checks the sum of areas of the four triangles the point makes with the 4 points of the rectangle,
+# using shoelace() defined previously
+# and returns True if the point is inside the rectangle
+# this function is for checking tank deaths: it checks if the center of any cannon balls is within the tank hitbox
 
 
 
@@ -56,64 +64,59 @@ TIME = 4  # these are indices for the sublists in 2d list shots. each sublist is
 redTank = image.load('assets/redTankNorm.png')
 
 # returns the velocity components (x and y), given a direction and magnitude (heading and  d)
+# this fuction is used to generate component velocities for tank shots when the heading of the tank is known. 
 def velComponents(heading,d):
     return d*cos(heading+pi/2) , -d*sin(heading + pi/2)
 
 
 
-def touchingWalls(xmin, xmax, ymin, ymax, points):
-    for point in points:
-        if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
-            return True
+# def touchingWalls(xmin, xmax, ymin, ymax, points):
+#     for point in points:
+#         if point[0]< xmin or point[0] > xmax or point[1] < ymin or point[1] > ymax:
+#             return True
 
-    return False
+#     return False
 
 
-def bounceSound(soundName):
-    if soundName == 'ping':
-        mixer.Sound.play(assets.ping)
-    if soundName == 'pong':
-        mixer.Sound.play(assets.pong)
+
 
 class Tank:
-    def __init__(self,surf, img, x, y, angle, col, scale, name):
+    def __init__(self,surf, img, x, y, angle, col, scale, name): #self, surface, image, x coordinate, y coordinate, angle, color, scale, name
         self.surf = surf
         self.scale = scale
         width = img.get_width()
         height = img.get_height()
-        self.img = transform.scale(img, (width*scale, height*scale))
+        self.img = transform.scale(img, (width*scale, height*scale)) # scale scales the tank
         self.name = name
         
         self.x = x
         self.y = y
         self.angle = angle
         
-        self.offsetDown = 4.25 * scale
-        self.y = y + self.offsetDown
+        self.offsetDown = 4.25 * scale  # the offset between the turret center(physics center) and the picture center. Since the tank rotates around its center of base
+        self.y = y + self.offsetDown  # self.y is the y coord of the physics center of tank 
         self.col = col
 
-        self.angVel = 2*pi/90
-        self.mag = 8
+        self.angVel = 2*pi/90 # angular velocity of tank
+        self.mag = 6          # linear velocity of tank (magnitude)
 
-        self.bulletVel = 9
-        self.bulletRad = 5 * scale
-        self.shots = []
-        self.loads = loads
+        self.bulletVel = 6.5  # bullet velocity
+        self.bulletRad = 5 * scale  #bulletRadius
+        self.shots = []       # the list of bullets by this tank
+        self.loads = loads    # the number of shots for each reload
+        
+    def update(self,forward, back, left, right,shooting): # update is running periodically for players to control the tanks
+        # foreard, back, left, right and shooting are key bindings
 
-        self.tanks = []
-        
-    def update(self,forward, back, left, right,shooting):
-        
-            
-        self.movement = [0,0,0]
+        self.movement = [0,0,0] # movement of this frame: angular change, change in x, change in y
         if left:
             self.angle += self.angVel
-            self.movement[0] = self.angVel
+            self.movement[0] = self.angVel # record movement if it happened
         elif right:
             self.angle -= self.angVel
             self.movement[0] = -self.angVel
         if forward:
-            self.x = self.x + self.mag*cos(self.angle  + pi/2) 
+            self.x = self.x + self.mag*cos(self.angle  + pi/2) # some trigonometry for an authentic tank drive
             self.y = self.y - self.mag*sin(self.angle  + pi/2) 
             self.movement[1] = self.mag*cos(self.angle  + pi/2)
             self.movement[2] = - self.mag*sin(self.angle  + pi/2)
@@ -124,15 +127,15 @@ class Tank:
             self.movement[2] = self.mag*sin(self.angle  + pi/2)
         
 
-        rotated_image = transform.rotate(self.img, degrees(self.angle))
-        rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y)
-        bounding_rect = rotated_image.get_rect(center = rotatedCenter)
-        self.small_rect = bounding_rect.scale_by(0.5,0.5)
-        self.small_rect.center = (self.x, self.y)
+        rotated_image = transform.rotate(self.img, degrees(self.angle)) # rotates the tank image based on angle
+        rotatedCenter = (self.offsetDown * cos(self.angle+pi/2) + self.x,  -self.offsetDown * sin(self.angle + pi/2) + self.y) # rotated image center calculated with trig
+        bounding_rect = rotated_image.get_rect(center = rotatedCenter)  # bounding rect
+        self.small_rect = bounding_rect.scale_by(0.5,0.5)  # half scaled bounding rect is used for tank-wall collision
+        self.small_rect.center = (self.x, self.y)          # centered at the physics center of tank
 
-        self.surf.blit(rotated_image, bounding_rect)
-        self.basePoints = []
-        self.fatPoints = []
+        self.surf.blit(rotated_image, bounding_rect)       # blit the rotated tank with bounding rect centered at rotated center for realistic rotation physics
+        self.basePoints = [] # the 8 key points that defines the tank shape (big rect plus small rect on top)
+        self.fatPoints = []  # the four points used for death detection
 
         h1 = (21*2**0.5) * self.scale
         h2 = (21**2 + 31**2)**0.5 * self.scale
@@ -144,7 +147,8 @@ class Tank:
         
         mh1 = (21**2+6**2)**0.5 * self.scale
         mh2 = (31**2+6**2)**0.5 * self.scale
-
+        # the math data to make basePoints an fatPoints: angles and hypotenuse lengths
+        # the points are made using polar form
 
         for i in range(4):
             if i//2 == 0:
@@ -160,86 +164,46 @@ class Tank:
                 self.basePoints.append([rotatedCenter[0] + mh1* cos(theta[i] + self.angle), rotatedCenter[1] - mh1 * sin(theta[i] + self.angle)])
             else:
                 self.basePoints.append([rotatedCenter[0] + mh2* cos(theta[i] + self.angle), rotatedCenter[1] - mh2* sin(theta[i] + self.angle)])
+        #the four points that defines the muzzle shape
 
-        for point in self.basePoints:
-            draw.circle(self.surf, self.col, point, 3)
-        # for point in self.fatPoints:
-            # draw.circle(self.surf, self.col, point, 3)
-        
 
-        draw.circle(self.surf, self.col, (self.x, self.y), 3)
-        draw.circle(self.surf, self.col, rotatedCenter, 3) 
-        draw.rect(self.surf, self.col, self.small_rect, 2)
-        
-
-        if shooting and self.loads != 0:
+        if shooting and self.loads != 0: # if shooting key pressed and there are still shots
             mixer.Sound.play(assets.pop)
             muzX, muzY = (self.fatPoints[0][0]+self.fatPoints[1][0])/2 + self.bulletRad*cos(self.angle+pi/2), (self.fatPoints[0][1]+self.fatPoints[1][1])/2 - self.bulletRad * sin(self.angle +pi/2)
-            vx,vy = velComponents(self.angle, self.bulletVel)
-            self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
-            self.loads -= 1
-        if 0<= time.get_ticks()% reloadPeriod <= margin:
+            vx,vy = velComponents(self.angle, self.bulletVel) # the shot starts from the muzzle of the tank
+            self.shots.append([muzX,muzY,vx,vy,time.get_ticks()]) # add the shot to the list shots
+            self.loads -= 1  # one shot fired, one less remained
+        if 0<= time.get_ticks()% reloadPeriod <= margin:  # when it's reload time, refill loads
             self.loads = loads
         for shot in self.shots:
-            # if shot[X]  <= 0 or shot[X]>=self.surf.get_width():
-            #     shot[VX] = -shot[VX]
-            #     mixer.Sound.play(assets.ping)
-            # if shot[Y] <= 0 or shot[Y] >= self.surf.get_height():
-            #     shot[VY] = -shot[VY]
-            #     mixer.Sound.play(assets.pong)
             shot[X] += shot[VX]
             shot[Y] += shot[VY]
-        
+        # runs the shots animation
         
         
         
 
 
-def deathDetect(tanks):
+def deathDetect(tanks): # detect if any tanks get shot
     for shooter in tanks:
         for target in tanks:
-            if shooter != target:
+            if shooter != target:  # for each shooter-target pair
                 for i in range(len(shooter.shots)):  
                     shot = shooter.shots[i]
-                    if pointInRect(target.fatPoints, [shot[:2]]):
+                    if pointInRect(target.fatPoints, [shot[:2]]):   # if any shots from shooter shot target, delete the shot and returns the target for identificatin purpose
                         del shooter.shots[i]
-                        print(shooter.name + '  destroyed  ' + target.name)
+                        # print(shooter.name + '  destroyed  ' + target.name)
                         return target
     
-def bulletVanish(tanks):
+def bulletVanish(tanks):  # vanish bullets when they reach their lifespan
     for ta in tanks:
-        for i in range(len(ta.shots)):  
+        for i in range(len(ta.shots)):  # for each shot in each tank
                 shot = ta.shots[i]
-                if time.get_ticks() - shot[TIME] >= bulletLife:
+                if time.get_ticks() - shot[TIME] >= bulletLife:  # if the bullet lived long enough, it will receive its fate of being deleted
                     del ta.shots[i]
-                    mixer.Sound.play(assets.shotVanish)
-                    break
-                if 0 <= shot[X] <= ta.surf.get_width() and 0 <= shot[Y] <= ta.surf.get_height():
+                    mixer.Sound.play(assets.shotVanish)  # plays the shot Vanish sound
+                    break                                  # breaks from the loop so the loop doesn't break
+                if 0 <= shot[X] <= ta.surf.get_width() and 0 <= shot[Y] <= ta.surf.get_height(): # only draws the shot if it's within visible window. not necessary though (legacy feature)
                     draw.circle(ta.surf, ta.col, shot[:2], ta.bulletRad)
-# changed from 5 to 3 and the circle is now in the wrong position. 
-
-                
 
 
-        
-
-
-
-
-# player1 = Tank(screen, assets.blueBase, 200, screen.get_height()/2, 0, BLACK, 5)
-# player2 = Tank(screen, assets.redBase, 800, screen.get_height()/2, 0, BLUE, 5)
-# bot = Tank(screen, assets.blackBase, 800, screen.get_height()/2, 0, BLUE, 5)
-
-# def moveTank(surf, image, rad, x, y):
-#     rotated_image = transform.rotate(image, degrees(rad))
-#     offsetToDown = 13
-#     rotatedCenter = (offsetToDown * cos(rad+pi/2) + x,  -offsetToDown * sin(rad + pi/2) + y+offsetToDown)
-#     new_rect = rotated_image.get_rect(center = rotatedCenter)
-#     surf.blit(rotated_image, new_rect)
-#     draw.circle(surf, (0,0,0), (x, y+offsetToDown), 5)
-
-
-
-
-
-    

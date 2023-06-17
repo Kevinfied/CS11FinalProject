@@ -1,8 +1,19 @@
+"""
+assets.py
+Raymond Wu and Kevin Xu
+
+This file loads and contains all the assets for the game.
+"""
+
+
 from pygame import *
 init()
+
+
 redBase = image.load('assets/redTankNorm.png')
 blueBase = image.load('assets/blueTankNorm.png')
 blackBase = image.load('assets/blackTankNorm.png')
+
 
 redMissile = image.load('assets/redTankMissile.png')
 blueMissile = image.load('assets/blueTankMissile.png')
@@ -57,5 +68,4 @@ arrowLeft = image.load("assets/arrowLeft.png")
 arrowRight = image.load("assets/arrowRight.png")
 
 #Settings Background
-
 settingsBg = image.load("assets/settingBKG.png")

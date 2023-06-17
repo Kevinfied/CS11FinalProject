@@ -179,7 +179,6 @@ class Tank:
             self.shots.append([muzX,muzY,vx,vy,time.get_ticks()])
             self.loads -= 1
         if 0<= time.get_ticks()% reloadPeriod <= margin:
-            print('reloaded')
             self.loads = loads
         for shot in self.shots:
             # if shot[X]  <= 0 or shot[X]>=self.surf.get_width():

@@ -44,6 +44,7 @@ thickness = 10
 leftScore = rightScore = 0
 
 def gridGen():
+    mixer.Sound.play(assets.PUappear)
     del horizontalLines[:]
     del verticalLines[:]
     for y in range(height+1):
@@ -234,7 +235,7 @@ def gameplay():
             screen.blit(assets.explosions[i], heherect)
             time.delay(100)
             display.flip()
-        # time.delay(3000)
+        time.delay(1000)
         if deadone == tankLeft:
             rightScore += 1
         else:
@@ -243,9 +244,11 @@ def gameplay():
             if rightScore == winScore:
                 winner = "PLAYER 2"
                 mode = 'end'
+                
             elif leftScore == winScore:
                 winner = "PLAYER 1"
                 mode = 'end'
+
         gridGen()
         tanksReset()
 
@@ -275,65 +278,6 @@ def pausing():
     screen.blit(pauseText, (screen.get_width()/2 - pauseText.get_width()/2, screen.get_height()/2 - pauseText.get_height()/2))
     screen.blit(toMainText, tmtRect)
     display.flip()
-    
-# def menu():
-# def setting():
-# def instruction():
-
-# def play():
-    # def pauseMenu():
-    #     pause = True
-    #     while pause:
-    #         for evt in event.get():
-    #             if evt.type == QUIT:
-    #                 quit()
-    #             if evt.type == KEYDOWN:
-    #                 if evt.key == K_ESCAPE:
-    #                     return False
-    #         screen.fill(BLACK)
-    #         pauseText = assets.clashFontM.render("Paused", True, RED)
-    #         screen.blit(pauseText, (screen.get_width()/2 - pauseText.get_width()/2, screen.get_height()/2 - pauseText.get_height()/2))
-    #         display.flip()
-    #         return True
-
-    
-
-
-        
-
-
-    
-
-# def hoverButton(button):
-#     button = Rect(button[0], button[1], button[2], button[3])
-#     buttonX = button[0]
-#     buttonY = button[1]
-#     buttonWidth = button[2]
-#     buttonHeight = button[3]
-
-#     if buttonWidth < 250:
-
-    
-#     return button
-
-# def drawButton(button, mx, my):
-#     buttonX = button[0]
-#     buttonY = button[1]
-#     buttonWidth = button[2]
-#     buttonHeight = button[3]
-
-
-# while mainrunning:
-#     if mode == 'menu':
-#         menu()
-#     elif mode == 'game':
-#         gameplay()
-#     elif mode == 'pause':
-#         pausing()
-#     elif mode == 'instructions':
-#         instructions()
-#     elif mode == 'setting':
-#         setting()
 
 
 def mainMenu():
@@ -354,10 +298,10 @@ def mainMenu():
                 leftScore = rightScore = 0
                 syncSettings()
                 mixer.Sound.play(assets.pop)
-                mode = 'game'
+                mode = 'instruction'
                 return
             elif play2Rect.collidepoint(mx, my):
-                # settingsScreen()
+                
                 mixer.Sound.play(assets.pop)
                 mode = 'setting'
                 loadSettings()
@@ -443,7 +387,6 @@ def settingsScreen():
     global reloadPeriod
     global bulletLife
     background = transform.scale(assets.settingsBg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # settingsScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     settingsTitle = assets.clashFontXL.render("SETTINGS" , True, (0, 0, 0))
     settingsTitleRect = settingsTitle.get_rect()
     settingsTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/8)
@@ -488,7 +431,7 @@ def settingsScreen():
     # while changingSettings:
     resetRect = Rect(20,20,100,40)
     defaultTxt = assets.clashFontS.render('Default', True, WHITE)
-    
+    escTxt = assets.clashFontS.render('esc to go back', True, BLACK)
     bounds = [[0,100],[1,10],[500,10000],[1000,10000]]
     mx, my = mouse.get_pos()
     mb = mouse.get_pressed()
@@ -582,7 +525,7 @@ def settingsScreen():
     
     draw.rect(screen, BLACK, resetRect, False, 9)
     screen.blit(defaultTxt, defaultTxt.get_rect(center = resetRect.center))
-
+    screen.blit(escTxt, (20, gameScreenHeight) )
     
     display.flip()
 
@@ -592,7 +535,47 @@ def settingsScreen():
 
 
 def instructionsScreen():
-    return
+    global mode
+    keyArray = key.get_pressed()
+    buttons = [[],[]]
+    drawScoreBoard(leftScore, rightScore, winScore)
+    for evt in event.get():
+        if evt.type == QUIT:
+            mode = 'quit'
+        if evt.type == KEYDOWN:
+            if evt.key == K_ESCAPE:
+                mode = 'menu'
+        
+        if keyArray[K_q] and keyArray[K_SLASH]:
+            mixer.Sound.play(assets.activated)
+            mode = 'game'
+    screen.fill(WHITE)
+    # qRect = Rect()
+
+    valids = [[0,0], [0,1], [0,5], [0,6],[1,0], [1,1], [1,2], [1,5], [1,6], [1,7]]
+    keyBinds = [keyArray[K_q], keyArray[K_w], keyArray[K_SLASH], keyArray[K_UP], keyArray[K_a], keyArray[K_s], keyArray[K_d], keyArray[K_LEFT], keyArray[K_DOWN], keyArray[K_RIGHT]]
+    for y in range(2):
+        for x in range(9):
+            buttons[y].append(Rect(x*100 + 100, y*100+150, 90,90))
+    
+    for y in range(2):
+        for x in range(9):
+            for pair in valids:
+                if y== pair[0] and x == pair[1]:
+                    if keyBinds[valids.index(pair)]:
+                        draw.rect(screen, GREEN, buttons[y][x], False, 5)
+                    else:
+                        draw.rect(screen, GREY, buttons[y][x], False, 5)
+    titleTxt = assets.clashFontXL.render('Controls', True, BLACK)
+    shootTxt = assets.clashFontS.render('awsd movement, Q shoot; arrow keys movement, / shoot', True, BLACK)
+    proceedTxt = assets.clashFontS.render('Hit Q and / (slash) together to proceed', True, BLACK)
+    escTxt = assets.clashFontS.render('Always esc to go back;', True, BLACK)
+    screen.blit(escTxt, (20, gameScreenHeight) )
+    screen.blit(titleTxt, titleTxt.get_rect(center = (SCREEN_WIDTH/2, 100)))
+    screen.blit(shootTxt, shootTxt.get_rect(center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/5 * 3)))
+    screen.blit(proceedTxt, proceedTxt.get_rect(center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/5 * 3 + 30)))
+    display.flip()
+    
 
 def gameOverScreen(winner):
     global mode
@@ -634,6 +617,8 @@ tanksReset()
 while mainRunning:
     if mode == 'menu':
         mainMenu()
+    elif mode == 'instruction':
+        instructionsScreen()
     elif mode == 'game':
         gameplay()
     elif mode == 'pause':

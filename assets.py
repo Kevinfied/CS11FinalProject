@@ -37,8 +37,8 @@ pop = mixer.Sound("assets/sounds/pop.mp3")
 ping = mixer.Sound("assets/sounds/ping.mp3")
 pong = mixer.Sound("assets/sounds/pong.mp3")
 shotVanish = mixer.Sound("assets/sounds/shotVanish.mp3")
-
-
+PUappear = mixer.Sound('assets/sounds/PUappear.mp3')
+activated = mixer.Sound('assets/sounds/shieldActivated.mp3')
 
 # Font
 font.init()

@@ -443,7 +443,8 @@ def settingsScreen():
     global reloadPeriod
     global bulletLife
     background = transform.scale(assets.settingsBg, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    # settingsScreen = display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    # Super messy because didn't want to put the stuff in lists
+    # Just loading a bunch of assets and adjusting them
     settingsTitle = assets.clashFontXL.render("SETTINGS" , True, (0, 0, 0))
     settingsTitleRect = settingsTitle.get_rect()
     settingsTitleRect.center = (SCREEN_WIDTH/2, SCREEN_HEIGHT/8)
@@ -463,6 +464,7 @@ def settingsScreen():
     increaseButton = transform.scale(assets.arrowRight, (50, 50))
     decreaseButton = transform.scale(assets.arrowLeft, (50, 50))
 
+    # The arrow buttons
     winScoreUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 - 25, 50, 50)
     winScoreDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 - 25, 50, 50)
     tankLoadUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 + 75, 50, 50)
@@ -472,18 +474,19 @@ def settingsScreen():
     bulletLifeUp = Rect(SCREEN_WIDTH/2 + 150, SCREEN_HEIGHT/4 + 275, 50, 50)
     bulletLifeDown = Rect(SCREEN_WIDTH/2 - 50, SCREEN_HEIGHT/4 + 275, 50, 50)
 
+    # The values of the settings
     winScoreVal = assets.clashFontL.render(str(winScore), True, (0, 0, 0))
     winScoreValRect = winScoreVal.get_rect()
-    winScoreValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4)
+    winScoreValRect.center = (SCREEN_WIDTH/2 + 75, SCREEN_HEIGHT/4)
     tankLoadVal = assets.clashFontL.render(str(bulletLoad), True, (0, 0, 0))
     tankLoadValRect = tankLoadVal.get_rect()
-    tankLoadValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 100)
+    tankLoadValRect.center = (SCREEN_WIDTH/2 + 75, SCREEN_HEIGHT/4 + 100)
     reloadPeriodVal = assets.clashFontL.render(str(reloadPeriod), True, (0, 0, 0))
     reloadPeriodValRect = reloadPeriodVal.get_rect()
-    reloadPeriodValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 200)
+    reloadPeriodValRect.center = (SCREEN_WIDTH/2 + 75, SCREEN_HEIGHT/4 + 200)
     bulletLifeVal = assets.clashFontL.render(str(bulletLife), True, (0, 0, 0))
     bulletLifeValRect = bulletLifeVal.get_rect()
-    bulletLifeValRect.center = (SCREEN_WIDTH/2 + 50, SCREEN_HEIGHT/4 + 300)
+    bulletLifeValRect.center = (SCREEN_WIDTH/2 + 75, SCREEN_HEIGHT/4 + 300)
     # changingSettings = True
     # while changingSettings:
     resetRect = Rect(20,20,100,40)
@@ -491,7 +494,7 @@ def settingsScreen():
     
     bounds = [[0,100],[1,10],[500,10000],[1000,10000]]
     mx, my = mouse.get_pos()
-    mb = mouse.get_pressed()
+
     for evt in event.get():
         if evt.type == QUIT:
             # settings.saveSettings(winScore, bulletLoad, reloadPeriod, bulletLife)
